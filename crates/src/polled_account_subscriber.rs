@@ -100,7 +100,7 @@ mod tests {
     use solana_rpc_client_api::request::RpcRequest;
 
     use super::*;
-    use crate::{accounts::User, SpotPosition};
+    use crate::{SpotPosition, accounts::User};
 
     #[tokio::test]
     async fn polled_account_subscriber_updates() {

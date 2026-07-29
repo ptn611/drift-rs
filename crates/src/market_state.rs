@@ -3,14 +3,14 @@
 use fxhash::FxBuildHasher;
 
 use crate::{
-    drift_idl::accounts::{PerpMarket, SpotMarket},
     OraclePriceData,
+    drift_idl::accounts::{PerpMarket, SpotMarket},
 };
 use std::{
     collections::HashMap,
     sync::{
-        atomic::{AtomicPtr, Ordering},
         Arc,
+        atomic::{AtomicPtr, Ordering},
     },
 };
 

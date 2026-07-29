@@ -6,23 +6,23 @@ use std::ops::Neg;
 
 use super::get_oracle_normalization_factor;
 use crate::{
+    DriftClient, MarginMode, MarketId, SdkError, SdkResult, SpotPosition,
     ffi::{
-        self, calculate_margin_requirement_and_total_collateral_and_liability_info, AccountsList,
-        MarginContextMode,
+        self, AccountsList, MarginContextMode,
+        calculate_margin_requirement_and_total_collateral_and_liability_info,
     },
     math::{
         account_list_builder::AccountsListBuilder,
         constants::{
             AMM_RESERVE_PRECISION_I128, BASE_PRECISION_I128, LIQUIDATION_PCT_PRECISION,
-            MARGIN_PRECISION, QUOTE_PRECISION, QUOTE_PRECISION_I128, QUOTE_PRECISION_I64,
+            MARGIN_PRECISION, QUOTE_PRECISION, QUOTE_PRECISION_I64, QUOTE_PRECISION_I128,
             SPOT_WEIGHT_PRECISION,
         },
     },
     types::{
-        accounts::{PerpMarket, SpotMarket, User},
         MarginRequirementType, PerpPosition,
+        accounts::{PerpMarket, SpotMarket, User},
     },
-    DriftClient, MarginMode, MarketId, SdkError, SdkResult, SpotPosition,
 };
 
 /// Info on a position's liquidation price and unrealized PnL
@@ -403,18 +403,18 @@ mod tests {
 
     use super::*;
     use crate::{
+        MarketId,
         constants::{
             ids::pyth_program,
             {self},
         },
-        drift_idl::types::{HistoricalOracleData, MarketStatus, OracleSource, SpotPosition, AMM},
+        drift_idl::types::{AMM, HistoricalOracleData, MarketStatus, OracleSource, SpotPosition},
         math::constants::{
             AMM_RESERVE_PRECISION, BASE_PRECISION_I64, LIQUIDATION_FEE_PRECISION, PEG_PRECISION,
             PRICE_PRECISION_I64, SPOT_BALANCE_PRECISION, SPOT_BALANCE_PRECISION_U64,
             SPOT_CUMULATIVE_INTEREST_PRECISION,
         },
         utils::test_utils::*,
-        MarketId,
     };
 
     const SOL_ORACLE: Pubkey =
@@ -515,7 +515,7 @@ mod tests {
     async fn calculate_liq_price() {
         use solana_client::nonblocking::rpc_client::RpcClient;
 
-        use crate::{utils::test_envs::mainnet_endpoint, Wallet};
+        use crate::{Wallet, utils::test_envs::mainnet_endpoint};
 
         let wallet = Wallet::read_only(solana_pubkey::pubkey!(
             "DxoRJ4f5XRMvXU9SGuM4ZziBFUxbhB3ubur5sVZEvue2"
@@ -541,7 +541,7 @@ mod tests {
     async fn calculate_margin_requirements_works() {
         use solana_client::nonblocking::rpc_client::RpcClient;
 
-        use crate::{utils::test_envs::mainnet_endpoint, Wallet};
+        use crate::{Wallet, utils::test_envs::mainnet_endpoint};
 
         let wallet = Wallet::read_only(solana_pubkey::pubkey!(
             "DxoRJ4f5XRMvXU9SGuM4ZziBFUxbhB3ubur5sVZEvue2"
@@ -832,14 +832,16 @@ mod tests {
     fn liquidation_price_no_positions() {
         let user = User::default();
         let mut accounts_map = AccountsList::new(&mut [], &mut [], &mut []);
-        assert!(calculate_liquidation_price_inner(
-            &user,
-            &sol_perp_market(),
-            None,
-            100,
-            &mut accounts_map
-        )
-        .is_err());
+        assert!(
+            calculate_liquidation_price_inner(
+                &user,
+                &sol_perp_market(),
+                None,
+                100,
+                &mut accounts_map
+            )
+            .is_err()
+        );
     }
 
     #[test]

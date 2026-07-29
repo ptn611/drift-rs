@@ -1,7 +1,7 @@
 [package]
 name = "drift-client-callbacks"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 drift-rs = { path = "../.." }
@@ -10,5 +10,5 @@ env_logger = "0.11"
 dotenv = "0.15"
 clap = { version = "4.0", features = ["derive"] }
 futures-util = "0.3"
-anchor-lang = { version = "0.31", features = ["derive"] }
+anchor-lang = { version = "1.1", features = ["derive"] }
 rust_decimal = "*"

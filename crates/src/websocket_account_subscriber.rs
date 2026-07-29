@@ -9,7 +9,7 @@ use solana_rpc_client::nonblocking::rpc_client::RpcClient;
 use solana_rpc_client_api::config::RpcAccountInfoConfig;
 use tokio::sync::oneshot;
 
-use crate::{utils::get_http_url, AccountUpdate, SdkError, SdkResult, UnsubHandle};
+use crate::{AccountUpdate, SdkError, SdkResult, UnsubHandle, utils::get_http_url};
 
 const LOG_TARGET: &str = "wsaccsub";
 

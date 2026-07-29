@@ -3,8 +3,8 @@
 use std::time::Duration;
 
 use futures_util::{
-    future::{ready, BoxFuture},
     Future, FutureExt,
+    future::{BoxFuture, ready},
 };
 use tokio::task::JoinHandle;
 

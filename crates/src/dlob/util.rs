@@ -1,6 +1,6 @@
 use std::hash::{Hash, Hasher};
 
-use crate::types::{accounts::User, Order, OrderStatus};
+use crate::types::{Order, OrderStatus, accounts::User};
 use ahash::AHasher;
 use solana_pubkey::Pubkey;
 

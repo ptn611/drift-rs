@@ -2,14 +2,15 @@
 //! Titan SDK helpers
 use crate::solana_sdk::{message::AddressLookupTableAccount, pubkey::Pubkey};
 pub use titan_swap_api_client::{
+    TitanClient,
     quote::{Provider, QuoteRequest, QuoteResponse, SwapMode},
     swap::SwapResponse,
-    TitanClient,
 };
 
 use crate::{
+    DriftClient,
     types::{SdkError, SdkResult},
-    utils, DriftClient,
+    utils,
 };
 
 /// Default Titan API url

@@ -2,16 +2,16 @@ use std::{str::FromStr, time::Duration};
 
 use anchor_lang::Discriminator;
 use drift_rs::{
+    DriftClient, GrpcSubscribeOpts, Pubkey, TransactionBuilder, Wallet,
     constants::DEFAULT_PUBKEY,
     event_subscriber::RpcClient,
     grpc::grpc_subscriber::AccountFilter,
     math::constants::{BASE_PRECISION_I64, LAMPORTS_PER_SOL_I64, PRICE_PRECISION_U64},
     types::{
-        accounts::User, solana_sdk::clock::Slot, Context, MarketId, MarketType, NewOrder,
-        OrderParams, OrderType, PositionDirection, PostOnlyParam, SettlePnlMode,
+        Context, MarketId, MarketType, NewOrder, OrderParams, OrderType, PositionDirection,
+        PostOnlyParam, SettlePnlMode, accounts::User, solana_sdk::clock::Slot,
     },
     utils::test_envs::{devnet_endpoint, mainnet_endpoint, test_keypair},
-    DriftClient, GrpcSubscribeOpts, Pubkey, TransactionBuilder, Wallet,
 };
 use futures_util::StreamExt;
 use solana_keypair::Keypair;
@@ -122,27 +122,29 @@ async fn client_sync_subscribe_mainnet_grpc() {
     let (slot_update_tx, mut slot_update_rx) = tokio::sync::mpsc::channel::<Slot>(1);
     let (user_update_tx, mut user_update_rx) = tokio::sync::mpsc::channel::<Pubkey>(1);
 
-    assert!(client
-        .grpc_subscribe(
-            "https://api.rpcpool.com".into(),
-            std::env::var("TEST_GRPC_X_TOKEN").expect("TEST_GRPC_X_TOKEN set"),
-            GrpcSubscribeOpts::default()
-                .usermap_on()
-                .on_slot(move |new_slot| {
-                    println!("slot: {new_slot}");
-                    let _ = slot_update_tx.try_send(new_slot);
-                })
-                .on_account(
-                    AccountFilter::partial().with_discriminator(User::DISCRIMINATOR),
-                    move |account| {
-                        println!("account: {}", account.pubkey);
-                        let _ = user_update_tx.try_send(account.pubkey);
-                    }
-                ),
-            true,
-        )
-        .await
-        .is_ok());
+    assert!(
+        client
+            .grpc_subscribe(
+                "https://api.rpcpool.com".into(),
+                std::env::var("TEST_GRPC_X_TOKEN").expect("TEST_GRPC_X_TOKEN set"),
+                GrpcSubscribeOpts::default()
+                    .usermap_on()
+                    .on_slot(move |new_slot| {
+                        println!("slot: {new_slot}");
+                        let _ = slot_update_tx.try_send(new_slot);
+                    })
+                    .on_account(
+                        AccountFilter::partial().with_discriminator(User::DISCRIMINATOR),
+                        move |account| {
+                            println!("account: {}", account.pubkey);
+                            let _ = user_update_tx.try_send(account.pubkey);
+                        }
+                    ),
+                true,
+            )
+            .await
+            .is_ok()
+    );
 
     // oracle map subscribed
     for market in client.get_all_spot_market_ids() {
@@ -335,11 +337,13 @@ async fn settle_pnl_txs() {
         .init_tx(&wallet.default_sub_account(), false)
         .await
         .unwrap()
-        .place_orders(vec![NewOrder::limit(doge_perp)
-            .amount(50 * BASE_PRECISION_I64)
-            .price(1000 * PRICE_PRECISION_U64)
-            .post_only(PostOnlyParam::None)
-            .build()])
+        .place_orders(vec![
+            NewOrder::limit(doge_perp)
+                .amount(50 * BASE_PRECISION_I64)
+                .price(1000 * PRICE_PRECISION_U64)
+                .post_only(PostOnlyParam::None)
+                .build(),
+        ])
         .settle_pnl(doge_perp.index(), None, None)
         .build();
 

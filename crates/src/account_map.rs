@@ -19,12 +19,12 @@ use solana_rpc_client_api::{
 };
 
 use crate::{
+    SdkResult, UnsubHandle,
     constants::PROGRAM_ID,
     grpc::AccountUpdate,
     polled_account_subscriber::PolledAccountSubscriber,
     types::{DataAndSlot, EMPTY_ACCOUNT_CALLBACK},
     websocket_account_subscriber::WebsocketAccountSubscriber,
-    SdkResult, UnsubHandle,
 };
 
 const LOG_TARGET: &str = "accountmap";
@@ -175,7 +175,7 @@ impl AccountMap {
     }
 
     /// On account hook for gRPC subscriber
-    pub fn on_account_fn(&self) -> impl Fn(&AccountUpdate) {
+    pub fn on_account_fn(&self) -> impl Fn(&AccountUpdate) + 'static {
         let accounts = Arc::clone(&self.inner);
         let subscriptions = Arc::clone(&self.subscriptions);
         move |update| {
@@ -469,11 +469,11 @@ mod tests {
 
     use super::*;
     use crate::{
+        Wallet,
         accounts::User,
-        constants::{state_account, DEFAULT_PUBKEY},
+        constants::{DEFAULT_PUBKEY, state_account},
         types::accounts::State,
         utils::{get_ws_url, test_envs::mainnet_endpoint},
-        Wallet,
     };
 
     #[tokio::test]

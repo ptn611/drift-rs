@@ -2,8 +2,8 @@ use anchor_lang::Discriminator;
 use solana_rpc_client_api::filter::{Memcmp, RpcFilterType};
 
 use crate::types::{
-    accounts::{PerpMarket, SpotMarket, User, UserStats},
     MarketType,
+    accounts::{PerpMarket, SpotMarket, User, UserStats},
 };
 
 pub fn get_user_filter() -> RpcFilterType {

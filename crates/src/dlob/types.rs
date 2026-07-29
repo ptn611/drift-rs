@@ -1,6 +1,6 @@
 use std::{
     fmt::Debug,
-    sync::{atomic::AtomicPtr, Arc},
+    sync::{Arc, atomic::AtomicPtr},
 };
 
 use arrayvec::ArrayVec;
@@ -8,11 +8,11 @@ use solana_pubkey::Pubkey;
 
 use crate::{
     dlob::{Direction, OrderDelta},
-    ffi::{calculate_auction_price, OraclePriceData},
+    ffi::{OraclePriceData, calculate_auction_price},
     math::standardize_price,
     types::{
-        accounts::PerpMarket, MarketId, MarketType, Order, OrderParams, OrderStatus,
-        OrderTriggerCondition, OrderType, SdkResult,
+        MarketId, MarketType, Order, OrderParams, OrderStatus, OrderTriggerCondition, OrderType,
+        SdkResult, accounts::PerpMarket,
     },
 };
 
@@ -307,13 +307,13 @@ pub(crate) struct FloatingLimitOrder {
     pub reduce_only: bool,
 }
 
-#[allow(dead_code)]
 #[derive(Default, Debug, Clone)]
 pub(crate) struct TriggerOrder {
     pub id: u64,
     pub size: u64,
     /// static trigger price
     pub price: u64,
+    #[allow(dead_code)] // set in From impl, used for future trigger logic
     pub slot: u64,
     pub max_ts: u64,
     pub condition: OrderTriggerCondition,
@@ -325,6 +325,7 @@ pub(crate) struct TriggerOrder {
 
 impl TriggerOrder {
     /// Returns true if the order would trigger at the given `oracle_price`
+    #[allow(dead_code)] // used for future trigger evaluation logic
     pub fn will_trigger_at(&self, oracle_price: u64) -> bool {
         oracle_price != 0
             && match self.condition {

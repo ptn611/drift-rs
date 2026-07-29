@@ -14,7 +14,7 @@ use ahash::HashSet;
 use anchor_lang::{AnchorDeserialize, Discriminator};
 use base64::Engine;
 pub use drift_pubsub_client::PubsubClient;
-use futures_util::{future::BoxFuture, stream::FuturesOrdered, FutureExt, Stream, StreamExt};
+use futures_util::{FutureExt, Stream, StreamExt, future::BoxFuture, stream::FuturesOrdered};
 use log::{debug, info, warn};
 use regex::Regex;
 pub use solana_rpc_client::nonblocking::rpc_client::RpcClient;
@@ -24,12 +24,12 @@ use solana_rpc_client_api::{
     response::RpcLogsResponse,
 };
 use solana_transaction_status::{
-    option_serializer::OptionSerializer, EncodedTransactionWithStatusMeta, UiTransactionEncoding,
+    EncodedTransactionWithStatusMeta, UiTransactionEncoding, option_serializer::OptionSerializer,
 };
 use tokio::{
     sync::{
-        mpsc::{channel, Receiver, Sender},
         RwLock,
+        mpsc::{Receiver, Sender, channel},
     },
     task::JoinHandle,
 };
@@ -41,10 +41,10 @@ use crate::{
         types::{MarketType, Order, OrderAction, OrderActionExplanation, PositionDirection},
     },
     grpc::{
-        grpc_subscriber::{DriftGrpcClient, GeyserSubscribeOpts, GrpcConnectionOpts},
         TransactionUpdate,
+        grpc_subscriber::{DriftGrpcClient, GeyserSubscribeOpts, GrpcConnectionOpts},
     },
-    types::{events::SwapRecord, SdkResult},
+    types::{SdkResult, events::SwapRecord},
 };
 
 const LOG_TARGET: &str = "events";
@@ -869,7 +869,7 @@ impl TxSignatureCache {
 mod test {
     use crate::solana_sdk::{
         instruction::{AccountMeta, Instruction},
-        message::{v0, Hash, VersionedMessage},
+        message::{Hash, VersionedMessage, v0},
         pubkey::Pubkey,
     };
     use ahash::HashMap;
@@ -1011,15 +1011,15 @@ mod test {
     #[test]
     fn parses_order_trigger() {
         let logs = &[
-        "Program log: Instruction: TriggerOrder",
-        "Program log: new auction duration 20 start price -78510 end price -240874",
-        "Program data: 4DRDR8LtbQG05GRoAAAAAAMAAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAbgLAAAAAAAAAAAAAbgLAAAAAAAAAAAAAAFyjMdMRfzcEXahOyKad9N6FfOMHN8CvExn1JYdEjXysQEXAQAAAQEBAGXNHQAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAAAAADvauMIAAAAAAAAAAAA",
-        "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 20239 of 319700 compute units",
-        "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
-        "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [1]",
-        "Program log: Instruction: FillPerpOrder",
-        "Program log: market 0 amm skipping auction duration",
-        "Program log: 4DRDR8LtbQG05GRoAAAAAAIGAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAUcHAAAAAAAAASRutQAAAAAAAQBlzR0AAAAAAayTcQQAAAAAAc9IAAAAAAAAAAABySEAAAAAAAAAAXKMx0xF/NwRdqE7Ipp303oV84wc3wK8TGfUlh0SNfKxARcBAAABAQEAZc0dAAAAAAEAZc0dAAAAAAGsk3EEAAAAAAAAAAAAAO9q4wgAAAAAAAEG408EAAAAAAAAAA==",
+            "Program log: Instruction: TriggerOrder",
+            "Program log: new auction duration 20 start price -78510 end price -240874",
+            "Program data: 4DRDR8LtbQG05GRoAAAAAAMAAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAbgLAAAAAAAAAAAAAbgLAAAAAAAAAAAAAAFyjMdMRfzcEXahOyKad9N6FfOMHN8CvExn1JYdEjXysQEXAQAAAQEBAGXNHQAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAAAAADvauMIAAAAAAAAAAAA",
+            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 20239 of 319700 compute units",
+            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
+            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [1]",
+            "Program log: Instruction: FillPerpOrder",
+            "Program log: market 0 amm skipping auction duration",
+            "Program log: 4DRDR8LtbQG05GRoAAAAAAIGAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAUcHAAAAAAAAASRutQAAAAAAAQBlzR0AAAAAAayTcQQAAAAAAc9IAAAAAAAAAAABySEAAAAAAAAAAXKMx0xF/NwRdqE7Ipp303oV84wc3wK8TGfUlh0SNfKxARcBAAABAQEAZc0dAAAAAAEAZc0dAAAAAAGsk3EEAAAAAAAAAAAAAO9q4wgAAAAAAAEG408EAAAAAAAAAA==",
         ];
         let mut found_trigger = false;
         for log in logs {

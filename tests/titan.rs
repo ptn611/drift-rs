@@ -1,11 +1,11 @@
 #![cfg(feature = "titan")]
 
 use drift_rs::{
+    DriftClient, TransactionBuilder, Wallet,
     event_subscriber::RpcClient,
     titan::{Provider, SwapMode, TitanSwapApi},
-    types::{accounts::User, Context, MarketId},
+    types::{Context, MarketId, accounts::User},
     utils::test_envs::{mainnet_endpoint, mainnet_test_keypair},
-    DriftClient, TransactionBuilder, Wallet,
 };
 use solana_transaction::{InstructionError, TransactionError};
 use tokio::sync::OnceCell;

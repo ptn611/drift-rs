@@ -6,7 +6,7 @@ use crate::{
 };
 use anchor_lang::Discriminator;
 use base64::Engine;
-use bytemuck::{bytes_of, Pod, Zeroable};
+use bytemuck::{Pod, Zeroable, bytes_of};
 use serde_json::json;
 use solana_message::AddressLookupTableAccount;
 

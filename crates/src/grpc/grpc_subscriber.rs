@@ -17,13 +17,14 @@ use yellowstone_grpc_proto::{
         SubscribeUpdateAccountInfo, SubscribeUpdateBlockMeta,
     },
     prelude::{
+        SubscribeRequest, SubscribeRequestFilterAccounts, SubscribeRequestFilterAccountsFilter,
+        SubscribeRequestFilterAccountsFilterMemcmp, SubscribeRequestFilterSlots,
+        SubscribeRequestFilterTransactions, SubscribeRequestPing,
         subscribe_request_filter_accounts_filter::Filter as AccountsFilterOneof,
         subscribe_request_filter_accounts_filter_memcmp::Data as AccountsFilterMemcmpOneof,
-        subscribe_update::UpdateOneof, SubscribeRequest, SubscribeRequestFilterAccounts,
-        SubscribeRequestFilterAccountsFilter, SubscribeRequestFilterAccountsFilterMemcmp,
-        SubscribeRequestFilterSlots, SubscribeRequestFilterTransactions, SubscribeRequestPing,
+        subscribe_update::UpdateOneof,
     },
-    tonic::{codec::CompressionEncoding, transport::Certificate, Status},
+    tonic::{Status, codec::CompressionEncoding, transport::Certificate},
 };
 
 use crate::types::UnsubHandle;
@@ -311,9 +312,11 @@ impl DriftGrpcClient {
         commitment: CommitmentLevel,
         subscribe_opts: GeyserSubscribeOpts,
     ) -> Result<UnsubHandle, GrpcError> {
+        let endpoint = self.endpoint.clone();
+        let x_token = self.x_token.clone();
         let mut grpc_client = grpc_connect(
-            self.endpoint.as_str(),
-            self.x_token.as_str(),
+            endpoint.as_str(),
+            x_token.as_str(),
             self.grpc_opts.clone().unwrap_or_default(),
         )
         .await
@@ -623,7 +626,7 @@ async fn grpc_connect(
     endpoint: &str,
     x_token: &str,
     opts: GrpcConnectionOpts,
-) -> Result<GeyserGrpcClient<impl Interceptor>, GeyserGrpcBuilderError> {
+) -> Result<GeyserGrpcClient<impl Interceptor + use<>>, GeyserGrpcBuilderError> {
     info!(target: "grpc", "gRPC connecting: {endpoint}...");
     let mut tls_config = ClientTlsConfig::new().with_native_roots();
     if let Ok(path) = &std::env::var("GRPC_CA_CERT") {

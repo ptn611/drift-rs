@@ -2,11 +2,11 @@ use solana_transaction::{InstructionError, TransactionError};
 
 const LAMPORTS_PER_SOL: u64 = 1_000_000_000;
 use drift_rs::{
+    DriftClient, TransactionBuilder, Wallet,
     event_subscriber::RpcClient,
     jupiter::{JupiterSwapApi, SwapMode},
-    types::{accounts::User, Context, MarketId},
+    types::{Context, MarketId, accounts::User},
     utils::test_envs::{mainnet_endpoint, mainnet_test_keypair},
-    DriftClient, TransactionBuilder, Wallet,
 };
 use tokio::sync::OnceCell;
 

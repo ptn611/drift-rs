@@ -1,10 +1,10 @@
 use crate::{
+    DriftClient, Wallet,
     account_map::AccountMap,
     accounts::User,
-    dlob::{DLOBNotifier, DLOB},
+    dlob::{DLOB, DLOBNotifier},
     grpc::AccountUpdate,
     types::MarketId,
-    DriftClient, Wallet,
 };
 use solana_pubkey::Pubkey;
 

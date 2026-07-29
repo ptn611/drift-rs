@@ -1,6 +1,6 @@
 use std::sync::{
-    atomic::{AtomicU64, Ordering},
     Arc,
+    atomic::{AtomicU64, Ordering},
 };
 
 use crate::ffi::abi_types::Account as FfiAccount;
@@ -11,24 +11,23 @@ use ahash::HashSet;
 use dashmap::{DashMap, ReadOnlyView};
 use drift_pubsub_client::PubsubClient;
 use futures_util::{
-    stream::{FuturesOrdered, FuturesUnordered},
     StreamExt,
+    stream::{FuturesOrdered, FuturesUnordered},
 };
 use log::warn;
 use solana_rpc_client::nonblocking::rpc_client::RpcClient;
 
 use crate::{
-    drift_idl::types::OracleSource,
-    ffi::{get_oracle_price, OraclePriceData},
-    grpc::AccountUpdate as GrpcAccountUpdate,
-    types::{AccountUpdate, MapOf, EMPTY_ACCOUNT_CALLBACK},
-    websocket_account_subscriber::WebsocketAccountSubscriber,
     MarketId, SdkError, SdkResult, UnsubHandle,
+    drift_idl::types::OracleSource,
+    ffi::{OraclePriceData, get_oracle_price},
+    grpc::AccountUpdate as GrpcAccountUpdate,
+    types::{AccountUpdate, EMPTY_ACCOUNT_CALLBACK, MapOf},
+    websocket_account_subscriber::WebsocketAccountSubscriber,
 };
 
 const LOG_TARGET: &str = "oraclemap";
 
-#[allow(dead_code)]
 #[derive(Clone, Debug)]
 /// Captures shared relationship between oracles and markets/source types
 enum OracleShareMode {
@@ -337,7 +336,6 @@ impl OracleMap {
     }
 
     /// Number of oracles known to the `OracleMap`
-    #[allow(dead_code)]
     pub fn len(&self) -> usize {
         self.oraclemap.len()
     }
@@ -374,7 +372,6 @@ impl OracleMap {
         }
     }
 
-    #[allow(dead_code)]
     pub fn values(&self) -> Vec<Oracle> {
         self.oraclemap.iter().map(|x| x.clone()).collect()
     }
@@ -388,7 +385,7 @@ impl OracleMap {
     }
 
     /// Returns a hook for driving the map with new `Account` updates
-    pub(crate) fn on_account_fn(&self) -> impl Fn(&GrpcAccountUpdate) {
+    pub(crate) fn on_account_fn(&self) -> impl Fn(&GrpcAccountUpdate) + 'static {
         let oraclemap = self.map();
         let oracle_lookup = self.shared_oracles.clone();
 

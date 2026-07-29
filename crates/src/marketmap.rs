@@ -1,8 +1,8 @@
 use std::{
     collections::HashSet,
     sync::{
-        atomic::{AtomicU64, Ordering},
         Arc,
+        atomic::{AtomicU64, Ordering},
     },
 };
 
@@ -11,8 +11,8 @@ use anchor_lang::{AccountDeserialize, AnchorDeserialize};
 use dashmap::DashMap;
 use drift_pubsub_client::PubsubClient;
 use futures_util::{
-    stream::{FuturesOrdered, FuturesUnordered},
     StreamExt,
+    stream::{FuturesOrdered, FuturesUnordered},
 };
 use serde_json::json;
 use solana_account_decoder_client_types::UiAccountEncoding;
@@ -24,14 +24,14 @@ use solana_rpc_client_api::{
 };
 
 use crate::{
+    DataAndSlot, MarketId, MarketType, PerpMarket, SdkResult, SpotMarket, UnsubHandle,
     accounts::State,
     constants::{self, derive_perp_market_account, derive_spot_market_account, state_account},
     drift_idl::types::OracleSource,
     grpc::AccountUpdate,
     memcmp::get_market_filter,
-    types::{MapOf, EMPTY_ACCOUNT_CALLBACK},
+    types::{EMPTY_ACCOUNT_CALLBACK, MapOf},
     websocket_account_subscriber::WebsocketAccountSubscriber,
-    DataAndSlot, MarketId, MarketType, PerpMarket, SdkResult, SpotMarket, UnsubHandle,
 };
 
 const LOG_TARGET: &str = "marketmap";
@@ -108,7 +108,7 @@ where
     }
 
     /// Returns a hook for driving the map with new `Account` updates
-    pub(crate) fn on_account_fn(&self) -> impl Fn(&AccountUpdate) {
+    pub(crate) fn on_account_fn(&self) -> impl Fn(&AccountUpdate) + 'static {
         let marketmap = self.map();
         move |update: &AccountUpdate| {
             let market = T::deserialize(&mut &update.data[8..]).expect("deser market");
@@ -430,11 +430,11 @@ mod tests {
     use drift_pubsub_client::PubsubClient;
     use solana_rpc_client::nonblocking::rpc_client::RpcClient;
 
-    use super::{get_market_accounts_with_fallback, MarketMap};
+    use super::{MarketMap, get_market_accounts_with_fallback};
     use crate::{
+        MarketId,
         accounts::{PerpMarket, SpotMarket},
         utils::{get_ws_url, test_envs::devnet_endpoint},
-        MarketId,
     };
 
     #[tokio::test]
@@ -448,10 +448,11 @@ mod tests {
             CommitmentConfig::confirmed(),
         );
 
-        assert!(map
-            .subscribe(&[MarketId::perp(0), MarketId::perp(1), MarketId::perp(1)])
-            .await
-            .is_ok());
+        assert!(
+            map.subscribe(&[MarketId::perp(0), MarketId::perp(1), MarketId::perp(1)])
+                .await
+                .is_ok()
+        );
         assert!(map.is_subscribed(0));
         assert!(map.is_subscribed(1));
         assert_eq!(map.subscriptions.len(), 2);

@@ -12,7 +12,7 @@ use solana_rpc_client_api::{
 };
 use tokio::sync::oneshot;
 
-use crate::{constants, types::DataAndSlot, UnsubHandle};
+use crate::{UnsubHandle, constants, types::DataAndSlot};
 
 #[derive(Clone, Debug)]
 pub struct ProgramAccountUpdate<T: AnchorDeserialize + Send> {

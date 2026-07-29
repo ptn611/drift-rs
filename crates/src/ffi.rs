@@ -5,11 +5,12 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::solana_sdk::{clock::Slot, pubkey::Pubkey};
-use anchor_lang::{prelude::AccountInfo, Discriminator};
+use anchor_lang::{Discriminator, prelude::AccountInfo};
 
 pub use self::abi_types::*;
 use crate::{
-    constants::{high_leverage_mode_account, PROGRAM_ID},
+    SdkResult,
+    constants::{PROGRAM_ID, high_leverage_mode_account},
     drift_idl::{
         accounts,
         errors::ErrorCode,
@@ -21,11 +22,10 @@ use crate::{
         standardize_price_i64,
     },
     types::{
-        accounts::{HighLeverageModeConfig, PerpMarket},
         ContractTier, FeeTier, Order, OrderParams, OrderType, PositionDirection,
         ProtectedMakerParams, RevenueShareOrder, SdkError, SpotBalanceType, ValidityGuardRails,
+        accounts::{HighLeverageModeConfig, PerpMarket},
     },
-    SdkResult,
 };
 
 // Declarations of exported functions from `drift-ffi` lib
@@ -34,7 +34,7 @@ use crate::{
 // DEV: the types here are deliberately received as those defined in `::abi_types`-
 // which are equivalent to the drift-ffi exported types directly from drift program crate
 // the result is that this code can use its own solana-program/* crates without restriction from the version used by drift program
-extern "C" {
+unsafe extern "C" {
     #[allow(improper_ctypes)]
     pub fn ffi_version() -> String;
     #[allow(improper_ctypes)]
@@ -1033,7 +1033,7 @@ pub mod abi_types {
     //! cross-boundary FFI types
     use crate::solana_sdk::{account::Account as SolanaAccount, clock::Slot, pubkey::Pubkey};
 
-    use crate::{drift_idl::types::MarginRequirementType, types::OracleValidity, OracleGuardRails};
+    use crate::{OracleGuardRails, drift_idl::types::MarginRequirementType, types::OracleValidity};
 
     /// `#[repr(C)]` account for a stable field layout across compiler versions.
     ///
@@ -1422,10 +1422,11 @@ mod tests {
     use anchor_lang::Discriminator;
 
     use super::{
-        margin_calculate_simplified_margin_requirement, simulate_place_perp_order, AccountWithKey,
-        AccountsList, FfiResult, MarginContextMode,
+        AccountWithKey, AccountsList, FfiResult, MarginContextMode,
+        margin_calculate_simplified_margin_requirement, simulate_place_perp_order,
     };
     use crate::{
+        AMM, HistoricalOracleData, MarketStatus, PositionDirection,
         accounts::State,
         constants::{self, ids::pyth_program},
         create_account_info,
@@ -1438,10 +1439,9 @@ mod tests {
             },
         },
         ffi::{
-            abi_types, calculate_auction_price,
+            IncrementalMarginCalculation, OraclePriceData, abi_types, calculate_auction_price,
             calculate_margin_requirement_and_total_collateral_and_liability_info,
-            check_ffi_version, get_oracle_price, simulate_update_amm, IncrementalMarginCalculation,
-            OraclePriceData,
+            check_ffi_version, get_oracle_price, simulate_update_amm,
         },
         math::constants::{
             BASE_PRECISION, BASE_PRECISION_I64, LIQUIDATION_FEE_PRECISION, MARGIN_PRECISION,
@@ -1449,9 +1449,8 @@ mod tests {
             QUOTE_PRECISION_I64, SPOT_BALANCE_PRECISION, SPOT_BALANCE_PRECISION_U64,
             SPOT_CUMULATIVE_INTEREST_PRECISION, SPOT_WEIGHT_PRECISION,
         },
-        types::{accounts::HighLeverageModeConfig, ContractTier, MarketType, ValidityGuardRails},
+        types::{ContractTier, MarketType, ValidityGuardRails, accounts::HighLeverageModeConfig},
         utils::test_utils::{get_account_bytes, get_pyth_price},
-        HistoricalOracleData, MarketStatus, PositionDirection, AMM,
     };
 
     fn sol_spot_market() -> SpotMarket {
@@ -3474,7 +3473,7 @@ mod tests {
 }
 
 // Simplified Margin Calculation FFI declarations
-extern "C" {
+unsafe extern "C" {
     #[allow(improper_ctypes)]
     pub fn margin_calculate_simplified_margin_requirement(
         user: &accounts::User,

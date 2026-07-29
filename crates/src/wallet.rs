@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use crate::solana_sdk::{
-    keypair::{keypair_from_seed, Keypair},
+    keypair::{Keypair, keypair_from_seed},
     message::{Hash, VersionedMessage},
     pubkey::Pubkey,
     signature::Signature,
@@ -11,7 +11,7 @@ use crate::solana_sdk::{
 
 use crate::{
     constants::{self},
-    types::{accounts::SpotMarket, SdkError, SdkResult},
+    types::{SdkError, SdkResult, accounts::SpotMarket},
     utils,
 };
 

@@ -3,9 +3,9 @@ use std::sync::OnceLock;
 use crate::solana_sdk::{message::AddressLookupTableAccount, pubkey::Pubkey};
 
 use crate::{
-    drift_idl::accounts::{PerpMarket, SpotMarket},
-    types::{accounts::State, Context},
     MarketId, MarketType, OracleSource,
+    drift_idl::accounts::{PerpMarket, SpotMarket},
+    types::{Context, accounts::State},
 };
 
 /// https://github.com/solana-labs/solana-web3.js/blob/4e9988cfc561f3ed11f4c5016a29090a61d129a8/src/sysvar.ts#L11

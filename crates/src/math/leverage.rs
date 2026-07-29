@@ -5,14 +5,14 @@ use super::{
     constants::{AMM_RESERVE_PRECISION, BASE_PRECISION, MARGIN_PRECISION, PRICE_PRECISION},
 };
 use crate::{
-    accounts::PerpMarket,
-    ffi::{
-        calculate_margin_requirement_and_total_collateral_and_liability_info, MarginCalculation,
-        MarginContextMode,
-    },
-    types::accounts::User,
     ContractType, DriftClient, MarginMode, MarginRequirementType, MarketId, PositionDirection,
     SdkError, SdkResult,
+    accounts::PerpMarket,
+    ffi::{
+        MarginCalculation, MarginContextMode,
+        calculate_margin_requirement_and_total_collateral_and_liability_info,
+    },
+    types::accounts::User,
 };
 
 pub fn get_leverage(client: &DriftClient, user: &User) -> SdkResult<u128> {
@@ -243,8 +243,8 @@ mod rpc_tests {
 
     use super::*;
     use crate::{
-        utils::test_envs::{mainnet_endpoint, test_keypair},
         Context, RpcAccountProvider, Wallet,
+        utils::test_envs::{mainnet_endpoint, test_keypair},
     };
 
     #[tokio::test]

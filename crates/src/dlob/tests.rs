@@ -1,10 +1,10 @@
 use solana_pubkey::Pubkey;
 
 use crate::{
-    dlob::{types::MarketOrder, Direction, OrderKind, Orderbook, Snapshot, TakerOrder, DLOB},
-    drift_idl::types::{HistoricalOracleData, AMM},
+    dlob::{DLOB, Direction, OrderKind, Orderbook, Snapshot, TakerOrder, types::MarketOrder},
+    drift_idl::types::{AMM, HistoricalOracleData},
     math::constants::{AMM_RESERVE_PRECISION, PEG_PRECISION},
-    types::{accounts::PerpMarket, MarketId, MarketType, Order, OrderStatus, OrderType},
+    types::{MarketId, MarketType, Order, OrderStatus, OrderType, accounts::PerpMarket},
 };
 
 fn create_test_order(
@@ -1613,7 +1613,7 @@ fn dlob_metadata_consistency_limit_auction_expiry_and_removal() {
     order.auction_start_price = 100_000;
     order.auction_end_price = 200_000;
     order.auction_duration = 5; // Will expire at slot 106
-                                // No oracle_price_offset - this makes it a regular limit order
+    // No oracle_price_offset - this makes it a regular limit order
     order.post_only = false; // This makes it a Market order (limit order with auction)
     order.max_ts = 0; // Don't expire based on timestamp
 
@@ -1907,7 +1907,9 @@ fn dlob_trigger_order_transition_update() {
 
         // But the order might not actually be in market_orders if the update failed
         if book.market_orders.bids.len() == 0 {
-            panic!("BUG DEMONSTRATED: Metadata says MarketTriggered but order is not in market_orders - this could cause 'metadata missing' errors");
+            panic!(
+                "BUG DEMONSTRATED: Metadata says MarketTriggered but order is not in market_orders - this could cause 'metadata missing' errors"
+            );
         }
     }
 

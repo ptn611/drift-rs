@@ -6,11 +6,11 @@ use anchor_lang::{AnchorDeserialize, AnchorSerialize, Space};
 use base64::Engine;
 use futures_util::{SinkExt, StreamExt};
 use serde::Deserialize;
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use tokio_stream::wrappers::ReceiverStream;
 use tokio_tungstenite::{
     connect_async,
-    tungstenite::{error::Error as WsError, Message},
+    tungstenite::{Message, error::Error as WsError},
 };
 
 pub use crate::types::{
@@ -18,9 +18,9 @@ pub use crate::types::{
     SignedMsgOrderParamsMessage as SignedOrder,
 };
 use crate::{
+    DriftClient, Wallet,
     constants::MarketExt,
     types::{Context, MarketId, OrderParams, SdkError, SdkResult},
-    DriftClient, Wallet,
 };
 
 /// Swift message discriminator (Anchor)
@@ -66,8 +66,8 @@ impl SignedOrderType {
     /// Return the original, hexified message
     pub fn raw(&self) -> &Option<String> {
         match self {
-            Self::Authority { inner: _, ref raw } => raw,
-            Self::Delegated { inner: _, ref raw } => raw,
+            Self::Authority { inner: _, raw } => raw,
+            Self::Delegated { inner: _, raw } => raw,
         }
     }
     pub fn delegated(order: SignedDelegateOrder) -> Self {
@@ -93,7 +93,7 @@ impl SignedOrderType {
         // max variant size +8 (anchor discriminator len)
         let mut buf = Vec::with_capacity(SignedDelegateOrder::INIT_SPACE + 8);
         match self {
-            Self::Authority { ref raw, ref inner } => {
+            Self::Authority { raw, inner } => {
                 if let Some(raw) = raw {
                     buf.extend_from_slice(raw.as_bytes());
                 } else {
@@ -101,7 +101,7 @@ impl SignedOrderType {
                     inner.serialize(&mut buf).unwrap();
                 }
             }
-            Self::Delegated { ref raw, ref inner } => {
+            Self::Delegated { raw, inner } => {
                 if let Some(raw) = raw {
                     buf.extend_from_slice(raw.as_bytes());
                 } else {
@@ -142,7 +142,7 @@ struct OrderNotification<'a> {
 }
 
 /// Error notification from Websocket
-#[allow(unused)]
+#[allow(dead_code)] // deserialized from JSON, fields read in future error handling
 #[derive(Clone, Debug, Deserialize)]
 struct ErrorNotification<'a> {
     channel: &'a str,
@@ -720,7 +720,9 @@ mod tests {
 
     #[test]
     fn deser_ix_payload() {
-        let data = hex_literal::hex!("204f658b1906620f040100000a09f3447ce77b9aa6374b05c5efb667042ca0cb15ca74af8a8b97b5ad09cd68aef5bda66b38c021c42ff59afad102b7ffa31bc9c52ee85a8752b3142d62b405833d29adc5096b41d5b9d3b2d6fe46deecb286644510a70f85b95853ec628209a20063386435613635653232333466353564303430313030303038306561383232623030303030303030303030303030303030303030303030303030303030303030303030303030303030313437373930303030303131343031623065386663666666666666666666663031343737393030303030303030303030303039303062323436383231343030303030303030363235393733333936393638343133353030303000");
+        let data = hex_literal::hex!(
+            "204f658b1906620f040100000a09f3447ce77b9aa6374b05c5efb667042ca0cb15ca74af8a8b97b5ad09cd68aef5bda66b38c021c42ff59afad102b7ffa31bc9c52ee85a8752b3142d62b405833d29adc5096b41d5b9d3b2d6fe46deecb286644510a70f85b95853ec628209a20063386435613635653232333466353564303430313030303038306561383232623030303030303030303030303030303030303030303030303030303030303030303030303030303030313437373930303030303131343031623065386663666666666666666666663031343737393030303030303030303030303039303062323436383231343030303030303030363235393733333936393638343133353030303000"
+        );
         let ix = drift_idl::instructions::PlaceSignedMsgTakerOrder::deserialize(&mut &data[8..])
             .unwrap();
         // signature, pubkey, len(u16)

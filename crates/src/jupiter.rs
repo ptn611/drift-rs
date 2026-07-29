@@ -1,15 +1,16 @@
 //! Jupiter SDK helpers
 use crate::solana_sdk::{message::AddressLookupTableAccount, pubkey::Pubkey};
 pub use jupiter_swap_api_client::{
+    JupiterSwapApiClient,
     quote::{QuoteResponse, SwapMode},
     swap::SwapInstructionsResponse,
     transaction_config::TransactionConfig,
-    JupiterSwapApiClient,
 };
 
 use crate::{
+    DriftClient,
     types::{SdkError, SdkResult},
-    utils, DriftClient,
+    utils,
 };
 
 /// Default Jupiter API url (updated from lite-api.jup.ag which is deprecated as of Jan 31, 2026)

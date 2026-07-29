@@ -3,12 +3,12 @@ use ahash::{HashMap, HashMapExt};
 use arrayvec::ArrayVec;
 
 use crate::{
+    DriftClient, MarketId, SdkError, SdkResult,
     accounts::State,
     constants::{self, oracle_source_to_owner, state_account},
     ffi::{AccountWithKey, AccountsList},
     types::accounts::User,
     utils::zero_account_to_bytes,
-    DriftClient, MarketId, SdkError, SdkResult,
 };
 
 /// Builds a list of users's associated spot, perp, and oracle accounts

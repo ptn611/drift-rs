@@ -4,14 +4,14 @@ use std::{
     fmt::Debug,
     iter::Peekable,
     sync::{
-        atomic::{AtomicBool, AtomicU64},
         Arc,
+        atomic::{AtomicBool, AtomicU64},
     },
     time::{SystemTime, UNIX_EPOCH},
 };
 
 use arrayvec::ArrayVec;
-use dashmap::{mapref::one::RefMut, DashMap};
+use dashmap::{DashMap, mapref::one::RefMut};
 use fxhash::FxBuildHasher;
 use solana_pubkey::Pubkey;
 
@@ -20,9 +20,9 @@ use crate::{
     dlob::util::order_hash,
     math::auction::is_auction_complete,
     types::{
-        accounts::{PerpMarket, User},
         MarketId, MarketType, Order, OrderStatus, OrderTriggerCondition, OrderType,
         PositionDirection,
+        accounts::{PerpMarket, User},
     },
 };
 

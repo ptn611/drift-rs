@@ -10,7 +10,7 @@ pub use crate::solana_sdk::{
     transaction::versioned::VersionedTransaction,
 };
 use crate::solana_sdk::{
-    instruction::{error::InstructionError, AccountMeta},
+    instruction::{AccountMeta, error::InstructionError},
     pubkey::Pubkey,
     transaction::TransactionError,
 };
@@ -29,11 +29,11 @@ pub use crate::drift_idl::{
     types::*,
 };
 use crate::{
-    constants::{ids, LUTS_DEVNET, LUTS_MAINNET, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID},
+    Wallet,
+    constants::{LUTS_DEVNET, LUTS_MAINNET, TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID, ids},
     drift_idl::errors::ErrorCode,
     grpc::grpc_subscriber::GrpcError,
     types::accounts::UserStats,
-    Wallet,
 };
 
 pub mod solana_sdk {
@@ -704,7 +704,7 @@ mod tests {
     };
 
     use super::{RemainingAccount, SdkError};
-    use crate::{drift_idl::errors::ErrorCode, types::ProgramError, MarketType};
+    use crate::{MarketType, drift_idl::errors::ErrorCode, types::ProgramError};
 
     #[test]
     fn market_type_str() {
