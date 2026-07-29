@@ -1,4 +1,4 @@
-use std::{str::FromStr, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use log::error;
 use solana_account_decoder_client_types::UiAccountEncoding;
@@ -55,33 +55,33 @@ impl PolledAccountSubscriber {
                 commitment: Some(rpc_client.commitment()),
                 ..Default::default()
             };
-            async move {
-                loop {
-                    tokio::select! {
-                        biased;
-                        _ = interval.tick() => {
-                            match rpc_client.get_ui_account_with_config(&pubkey, config.clone()).await {
-                                Ok(response) => {
-                                    if let Some(new_account) = response.value {
-                                        on_update(
-                                            &AccountUpdate {
-                                                owner: Pubkey::from_str(&new_account.owner).unwrap(),
-                                                lamports: new_account.lamports,
-                                                pubkey,
-                                                data: new_account.data.decode().unwrap_or_default(),
-                                                slot: response.context.slot,
-                                            }
-                                        );
+async move {
+                    loop {
+                        tokio::select! {
+                            biased;
+                            _ = interval.tick() => {
+                                match rpc_client.get_account_with_config(&pubkey, config.clone()).await {
+                                    Ok(response) => {
+                                        if let Some(new_account) = response.value {
+                                            on_update(
+                                                &AccountUpdate {
+                                                    owner: new_account.owner,
+                                                    lamports: new_account.lamports,
+                                                    pubkey,
+                                                    data: new_account.data,
+                                                    slot: response.context.slot,
+                                                }
+                                            );
+                                        }
                                     }
+                                    Err(err) => error!("{err:?}"),
                                 }
-                                Err(err) => error!("{err:?}"),
+                            }
+                            _ = &mut unsub_rx => {
+                                break;
                             }
                         }
-                        _ = &mut unsub_rx => {
-                            break;
-                        }
                     }
-                }
             }
         });
 
