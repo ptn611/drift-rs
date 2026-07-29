@@ -5,7 +5,6 @@ const SUPPORTED_PLATFORMS: &[(&str, &str, &str)] = &[
     ("apple", "x86_64-apple-darwin", "dylib"),
     ("linux", "x86_64-unknown-linux-gnu", "so"),
 ];
-const FFI_TOOLCHAIN_VERSION: &str = "1.76.0";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if std::env::var("DOCS_RS").is_ok() {
@@ -73,20 +72,18 @@ fn should_build_from_source() -> bool {
     }
 }
 
-fn build_ffi_lib(current_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
+fn build_ffi_lib(_current_dir: &Path) -> Result<(), Box<dyn std::error::Error>> {
     println!("cargo:warning={LIB}: building from source...");
 
     let host_target = std::env::var("TARGET")?;
     let (lib_target, lib_ext) = get_platform_details(&host_target)?;
 
-    verify_toolchain(lib_target)?;
-
     // Build the library
     let profile = std::env::var("PROFILE")?;
-    let drift_ffi_sys_crate = current_dir.join("crates/drift-ffi-sys");
+    let drift_ffi_sys_crate = Path::new("../drift-ffi-sys");
     // Check if submodule was cloned/exists
     check_submodule_exists(&drift_ffi_sys_crate)?;
-    build_with_toolchain(&drift_ffi_sys_crate, lib_target, &profile)?;
+    build_ffi(&drift_ffi_sys_crate, lib_target, &profile)?;
     install_library(&drift_ffi_sys_crate, &profile, lib_ext)?;
 
     Ok(())
@@ -97,11 +94,12 @@ fn check_submodule_exists(crate_path: &Path) -> Result<(), Box<dyn std::error::E
     let cargo_toml_path = crate_path.join("Cargo.toml");
 
     if !cargo_toml_path.exists() {
-        println!("cargo:warning=drift-ffi-sys submodule not found");
+        println!("cargo:warning=drift-ffi-sys not found at expected path");
         return Err(format!(
-            "drift-ffi-sys submodule not initialized: {} not found. Run 'git submodule update --init --recursive'",
+            "drift-ffi-sys not found: {} not found",
             cargo_toml_path.display()
-        ).into());
+        )
+        .into());
     }
 
     Ok(())
@@ -123,29 +121,9 @@ fn get_platform_details(
     Err("Unsupported platform".into())
 }
 
-fn verify_toolchain(lib_target: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let ffi_toolchain = format!("{FFI_TOOLCHAIN_VERSION}-{lib_target}");
-    let output = std::process::Command::new("rustup")
-        .args(["toolchain", "list"])
-        .output()?;
-
-    if !output.status.success() {
-        return Err("Failed to query rustup toolchains".into());
-    }
-
-    let installed_toolchains = String::from_utf8_lossy(&output.stdout);
-    if !installed_toolchains.contains(&ffi_toolchain) {
-        println!("cargo:warning=Required toolchain {ffi_toolchain} is missing");
-        println!("cargo:warning=Run: 'rustup install {ffi_toolchain}' to install");
-        return Err("Missing required toolchain".into());
-    }
-
-    Ok(())
-}
-
-fn build_with_toolchain(
+fn build_ffi(
     drift_ffi_sys_crate: &Path,
-    lib_target: &str,
+    _lib_target: &str,
     profile: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Filter out cargo and rustc environment variables
@@ -153,13 +131,12 @@ fn build_with_toolchain(
         .filter(|(k, _v)| !k.starts_with("CARGO") && !k.starts_with("RUSTC"))
         .collect();
 
-    let ffi_toolchain = format!("{FFI_TOOLCHAIN_VERSION}-{lib_target}");
-    let mut ffi_build = std::process::Command::new("rustup");
+    let mut ffi_build = std::process::Command::new("cargo");
     ffi_build
         .env_clear()
         .envs(ffi_build_envs)
         .current_dir(drift_ffi_sys_crate)
-        .args(["run", &ffi_toolchain, "cargo", "build"]);
+        .arg("build");
 
     match profile {
         "debug" => (),
