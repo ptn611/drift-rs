@@ -18,11 +18,11 @@ pub const SYSVAR_RENT_PUBKEY: Pubkey =
 
 /// Drift program address
 pub const PROGRAM_ID: Pubkey =
-    solana_pubkey::pubkey!("dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH");
+    solana_pubkey::pubkey!("CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw");
 
 /// Vault program address
 pub const VAULT_PROGRAM_ID: Pubkey =
-    solana_pubkey::pubkey!("vAuLTsyrvSfZRuRB3XgvkPwNGgYSs9YRYymVebLKoxR");
+    solana_pubkey::pubkey!("CRFVTrHuSCoVR457quS4FJaGJrhppyqncaPyCKWooArd");
 
 /// ed25519 verify program
 pub const ED25519_PROGRAM_ID: Pubkey =

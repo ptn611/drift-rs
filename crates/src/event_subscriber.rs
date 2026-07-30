@@ -121,7 +121,7 @@ impl EventSubscriber {
     ///
     /// * `sub_account` - pubkey of the user's sub-account to subscribe to (use Drift Program ID to get all program events)
     ///
-    /// passing the driftV2 address `dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH`
+    /// passing the driftV2 address `CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw`
     /// will yield events from all sub-accounts.
     ///
     /// Returns a stream of events
@@ -876,7 +876,7 @@ mod test {
     use anchor_lang::prelude::*;
     use base64::Engine;
     use futures_util::future::ready;
-    use solana_transaction_status::{TransactionStatusMeta, VersionedTransactionWithStatusMeta};
+    use solana_transaction_status::TransactionStatusMeta;
     use tokio::sync::Mutex;
 
     use super::*;
@@ -925,23 +925,23 @@ mod test {
             "Program ComputeBudget111111111111111111111111111111 success",
             "Program J1TnP8zvVxbtF5KFp5xRmWuvG9McnhzmBd9XGfCyuxFP invoke [1]",
             "Program log: Instruction: ArbPerp",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [2]",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw invoke [2]",
             "Program log: Instruction: PlaceAndTakePerpOrder",
             "Program log: Invalid Spot 0 Oracle: Stale (oracle_delay=23)",
             "Program log: 4DRDR8LtbQFOKvplAAAAAAAAGAABAAAAAAAAAAAAAAFGJn8TpIimFlKv8ZWRhmuU81x+ojkf3K4d+++MbslDfAGZcTYAAQEBAM5q/TIAAAABAAAAAAAAAAABAAAAAAAAAAAAAAAAAACTWxEAAAAAAAA=",
             "Program log: aBNAOFkVAlpOKvplAAAAAEYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8qZQ2DwAAAABMTREAAAAAAADOav0yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJlxNgAYAAEBAQAAAQAAAQAAAAAA",
             "Program log: 4DRDR8LtbQFOKvplAAAAAAIIGAABAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AQAAAAAAAAAAAceaAwAAAAAAAQDOav0yAAAAAQQgzQ4AAAAAAQIjAQAAAAAAAQA+////////AAAAAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AZlxNgABAQEAzmr9MgAAAAEAzmr9MgAAAAEEIM0OAAAAAAHpAf4sI0TDV0Ec0LWHs9mO40bjfKEm3A+yye5HFCQQQQEzPgAAAQABANraQssAAAABANraQssAAAABLJgAOwAAAACTWxEAAAAAAAA=",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 373815 of 1334075 compute units",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [2]",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw consumed 373815 of 1334075 compute units",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw success",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw invoke [2]",
             "Program log: Instruction: PlaceAndTakePerpOrder",
             "Program log: Invalid Spot 0 Oracle: Stale (oracle_delay=23)",
             "Program log: 4DRDR8LtbQFOKvplAAAAAAAAGAABAAAAAAAAAAAAAAFGJn8TpIimFlKv8ZWRhmuU81x+ojkf3K4d+++MbslDfAGacTYAAQABAM5q/TIAAAABAAAAAAAAAAABAAAAAAAAAAAAAAAAAACTWxEAAAAAAAA=",
             "Program log: aBNAOFkVAlpOKvplAAAAAEYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8qZQ2DwAAAACAPBEAAAAAAADOav0yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJpxNgAYAAEBAQABAAAAAQAAAAAA",
             "Program log: 4DRDR8LtbQFOKvplAAAAAAIQGAABAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AQAAAAAAAAAAAciaAwAAAAAAAQDgBS0LAAAAAQBYOwMAAAAAAYs/AAAAAAAAAAAB+Ejx//////8AAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AZpxNgABAAEAzmr9MgAAAAEA4AUtCwAAAAEAWDsDAAAAAAAAAAAAAJNbEQAAAAAAAA==",
             "Program log: 4DRDR8LtbQFOKvplAAAAAAIIGAABAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AQAAAAAAAAAAAcmaAwAAAAAAAQDuZNAnAAAAAYBpgwsAAAAAAV3iAAAAAAAAARhp////////AAAAAUYmfxOkiKYWUq/xlZGGa5TzXH6iOR/crh3774xuyUN8AZpxNgABAAEAzmr9MgAAAAEAzmr9MgAAAAGAwb4OAAAAAAFmQRGN8PRJqt5D5pVvCspbc3f0ZBdTB1Kcw0YfuzxCOAH2/poHAQEBAIjmn+sAAAABAFrDjp4AAAABgPDZLQAAAACTWxEAAAAAAAA=",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 269624 of 934786 compute units",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw consumed 269624 of 934786 compute units",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw success",
             "Program log: pnl 792986",
             "Program J1TnP8zvVxbtF5KFp5xRmWuvG9McnhzmBd9XGfCyuxFP consumed 738458 of 1399850 compute units",
             "Program J1TnP8zvVxbtF5KFp5xRmWuvG9McnhzmBd9XGfCyuxFP success",
@@ -1014,9 +1014,9 @@ mod test {
             "Program log: Instruction: TriggerOrder",
             "Program log: new auction duration 20 start price -78510 end price -240874",
             "Program data: 4DRDR8LtbQG05GRoAAAAAAMAAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAbgLAAAAAAAAAAAAAbgLAAAAAAAAAAAAAAFyjMdMRfzcEXahOyKad9N6FfOMHN8CvExn1JYdEjXysQEXAQAAAQEBAGXNHQAAAAABAAAAAAAAAAABAAAAAAAAAAAAAAAAAADvauMIAAAAAAAAAAAA",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 20239 of 319700 compute units",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [1]",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw consumed 20239 of 319700 compute units",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw success",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw invoke [1]",
             "Program log: Instruction: FillPerpOrder",
             "Program log: market 0 amm skipping auction duration",
             "Program log: 4DRDR8LtbQG05GRoAAAAAAIGAAABAWV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNAUcHAAAAAAAAASRutQAAAAAAAQBlzR0AAAAAAayTcQQAAAAAAc9IAAAAAAAAAAABySEAAAAAAAAAAXKMx0xF/NwRdqE7Ipp303oV84wc3wK8TGfUlh0SNfKxARcBAAABAQEAZc0dAAAAAAEAZc0dAAAAAAGsk3EEAAAAAAAAAAAAAO9q4wgAAAAAAAEG408EAAAAAAAAAA==",
@@ -1066,7 +1066,7 @@ mod test {
             fn get_tx(
                 &self,
                 signature: Signature,
-            ) -> BoxFuture<SdkResult<EncodedTransactionWithStatusMeta>> {
+            ) -> BoxFuture<'_, SdkResult<EncodedTransactionWithStatusMeta>> {
                 ready(
                     self.tx_responses
                         .get(signature.to_string().as_str())
@@ -1080,7 +1080,7 @@ mod test {
                 _account: Pubkey,
                 after: Option<Signature>,
                 _limit: Option<usize>,
-            ) -> BoxFuture<SdkResult<Vec<String>>> {
+            ) -> BoxFuture<'_, SdkResult<Vec<String>>> {
                 async move {
                     let after = after.map(|s| s.to_string());
                     let mut self_signatures = self.signatures.lock().await;
@@ -1225,15 +1225,15 @@ mod test {
         let logs = [
             "Program ComputeBudget111111111111111111111111111111 invoke [1]",
             "Program ComputeBudget111111111111111111111111111111 success",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [1]",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw invoke [1]",
             "Program log: Instruction: BeginSwap",
             "Program data: t7rLuuG7X4KaKRhoAAAAAAEA+cUBBi3pAAAAAAAAAAAAAChj7nUCAAAAAAAAAAAAAABkycImhIMAAAAAAAAAAAAASvkgrAIAAAAAAAAAAAAAAAA1DADgIgIAgE8SAA==",
             "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
             "Program log: Instruction: Transfer",
             "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA consumed 4645 of 549891 compute units",
             "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA success",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 68535 of 602850 compute units",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw consumed 68535 of 602850 compute units",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw success",
             "Program JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4 invoke [1]",
             "Program log: Instruction: Route",
             "Program obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y invoke [2]",
@@ -1258,7 +1258,7 @@ mod test {
             "Program JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4 consumed 75895 of 534315 compute units",
             "Program return: JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4 XcrSAAAAAAA=",
             "Program JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4 success",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH invoke [1]",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw invoke [1]",
             "Program log: Instruction: EndSwap",
             "Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [2]",
             "Program log: Instruction: Transfer",
@@ -1268,8 +1268,8 @@ mod test {
             "Program log: Invalid Spot 9 Oracle: Stale (oracle_delay=38)",
             "Program log: Invalid Spot 5 Oracle: Stale (oracle_delay=38)",
             "Program data: ort7woo4+vGaKRhoAAAAAGV38QbUIIRAZCdpZP/Qu59+ZUJQ7xCnqbsMijUn8LhNXcrSAAAAAACAhB4AAAAAAAEAAADA3KAIAAAAAEBCDwAAAAAAAAAAAAAAAAA=",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH consumed 152124 of 458420 compute units",
-            "Program dRiftyHA39MWEi3m9aunc5MzRF1JYuBsbn6VPcn33UH success",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw consumed 152124 of 458420 compute units",
+            "Program CRFEX81cWA7JkUe5E5YrurfAszRdWxvaYCyAzG39s3Fw success",
         ];
 
         let res: Vec<DriftEvent> = logs.iter().enumerate().filter_map(|(idx, log)| try_parse_log(log, "2M1e4UJ1x6rwvjFR6kh5CDCWZg8NcGeqzT2GbDRGaC2TmZDgNTNbKSn4Y4pu11apErVycpk5p3Hq6Tg2nrFdGimm", idx)).collect();
@@ -1286,35 +1286,42 @@ mod test {
         });
     }
 
-    /// Make transaction with dummy instruction for drift program
+    #[allow(deprecated)]
     fn make_transaction(
         account: Pubkey,
         signature: Signature,
         logs: Option<Vec<String>>,
     ) -> EncodedTransactionWithStatusMeta {
+        use solana_transaction_status::EncodableWithMeta;
+
+        let tx = VersionedTransaction {
+            signatures: vec![signature],
+            message: VersionedMessage::V0(
+                v0::Message::try_compile(
+                    &account,
+                    &[Instruction {
+                        program_id: constants::PROGRAM_ID,
+                        accounts: vec![AccountMeta::new_readonly(constants::PROGRAM_ID, true)],
+                        data: Default::default(),
+                    }],
+                    &[],
+                    Hash::new_unique(),
+                )
+                .expect("v0 message"),
+            ),
+        };
+
         let mut meta = TransactionStatusMeta::default();
         meta.log_messages = logs;
-        VersionedTransactionWithStatusMeta {
-            transaction: VersionedTransaction {
-                signatures: vec![signature],
-                message: VersionedMessage::V0(
-                    v0::Message::try_compile(
-                        &account,
-                        &[Instruction {
-                            program_id: constants::PROGRAM_ID,
-                            accounts: vec![AccountMeta::new_readonly(constants::PROGRAM_ID, true)],
-                            data: Default::default(),
-                        }],
-                        &[],
-                        Hash::new_unique(),
-                    )
-                    .expect("v0 message"),
-                ),
-            },
-            meta,
+
+        let version = tx.version();
+        let encoded_tx = tx.encode_with_meta(UiTransactionEncoding::Base64, &meta);
+
+        EncodedTransactionWithStatusMeta {
+            transaction: encoded_tx,
+            meta: Some(meta.into()),
+            version: Some(version),
         }
-        .encode(UiTransactionEncoding::Base64, Some(0), false)
-        .unwrap()
     }
 
     /// serialize event to string like Drift program log

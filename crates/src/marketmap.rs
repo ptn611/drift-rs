@@ -324,7 +324,7 @@ pub async fn get_market_accounts_with_fallback<T: Market + AnchorDeserialize>(
 
     if let Ok(OptionalContext::Context(accounts)) = response {
         for account in accounts.value {
-            let market_data = account.account.data.decode().expect("Market data");
+            let market_data = account.account.data.decode().expect("binary data");
             let data = T::deserialize(&mut &market_data[8..]).expect("deserializes Market");
             markets.push(data);
         }
@@ -341,9 +341,10 @@ pub async fn get_market_accounts_with_fallback<T: Market + AnchorDeserialize>(
         .await
         .expect("state account fetch");
 
-    let state_data = state_response.value.expect("state has data").data;
+    let ui_account = state_response.value.expect("state has data");
+    let state_data = ui_account.data.decode().expect("state data decode");
     let state = State::try_deserialize_unchecked(
-        &mut state_data.decode().expect("deser state account").as_slice(),
+        &mut state_data.as_slice(),
     )
     .expect("state deserializes");
 

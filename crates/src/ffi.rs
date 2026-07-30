@@ -1422,7 +1422,7 @@ mod tests {
     use anchor_lang::Discriminator;
 
     use super::{
-        AccountWithKey, AccountsList, FfiResult, MarginContextMode,
+        AccountWithKey, AccountsList, MarginContextMode,
         margin_calculate_simplified_margin_requirement, simulate_place_perp_order,
     };
     use crate::{
@@ -1499,7 +1499,7 @@ mod tests {
 
     #[test]
     fn ffi_check_version() {
-        let drift_ffi_sys = include_str!("../drift-ffi-sys/Cargo.toml");
+        let drift_ffi_sys = include_str!("../../../drift-ffi-sys/Cargo.toml");
         let cargo_toml: toml::Value = drift_ffi_sys.parse().unwrap();
         let expected_version = cargo_toml["package"]["version"].as_str();
         assert_eq!(&check_ffi_version(), expected_version.unwrap());

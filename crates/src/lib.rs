@@ -4223,7 +4223,6 @@ mod tests {
     use std::str::FromStr;
 
     use crate::solana_sdk::keypair::Keypair;
-    use anchor_lang::prelude::system_instruction;
     use serde_json::json;
     use solana_account_decoder_client_types::{UiAccount, UiAccountData, UiAccountEncoding};
     use solana_rpc_client::rpc_client::Mocks;

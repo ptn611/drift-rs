@@ -282,7 +282,7 @@ fn dlob_l2_snapshot() {
     assert_eq!(l2book.bids.len(), 3);
 
     // Modify an existing order
-    let old_order = create_test_order(1, OrderType::Limit, Direction::Long, 1100, 2, slot);
+    let _old_order = create_test_order(1, OrderType::Limit, Direction::Long, 1100, 2, slot);
     let mut new_order = create_test_order(1, OrderType::Limit, Direction::Long, 1100, 4, slot); // Changed size from 2 to 4
     new_order.post_only = true;
     dlob.insert_order(&user, slot, new_order);
@@ -835,8 +835,6 @@ fn dlob_auction_expiry_expired_orders_removed_not_resting() {
     let dlob = DLOB::default();
     let user = Pubkey::new_unique();
     let slot = 100;
-    let oracle_price = 1000;
-
     dlob.markets.entry(MarketId::perp(0)).or_insert(Orderbook {
         market: MarketId::perp(0),
         market_tick_size: 10,
@@ -2780,8 +2778,6 @@ fn l3book_vamm_orders_sorted_correctly() {
     let user = Pubkey::new_unique();
     let slot = 100;
     let oracle_price = 1000;
-    let vamm_price = 1100; // VAMM price higher than oracle
-
     dlob.markets.entry(MarketId::perp(0)).or_insert(Orderbook {
         market: MarketId::perp(0),
         market_tick_size: 1,
@@ -2943,8 +2939,6 @@ fn l3book_vamm_orders_sorted_correctly() {
     vamm_ask2.max_ts = 2_150_000_000; // Higher max_ts - should be sorted after order 8
     dlob.insert_order(&user, slot, vamm_ask2);
 
-    let vamm_ask_price = 850; // VAMM ask price lower than limit asks
-
     // Update slot again to expire the ask order
     if let Some(mut book) = dlob.markets.get_mut(&MarketId::new(0, MarketType::Perp)) {
         book.update_slot(query_slot);
@@ -2965,7 +2959,6 @@ fn l3book_vamm_orders_sorted_correctly() {
     assert_eq!(asks.len(), 4);
 
     // Collect order information
-    let ask_prices: Vec<u64> = asks.iter().map(|o| o.price).collect();
     let ask_order_ids: Vec<u32> = asks.iter().map(|o| o.order_id).collect();
     let ask_max_ts_values: Vec<u64> = asks.iter().map(|o| o.max_ts).collect();
 

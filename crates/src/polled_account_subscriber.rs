@@ -1,4 +1,4 @@
-use std::{sync::Arc, time::Duration};
+use std::{str::FromStr, sync::Arc, time::Duration};
 
 use log::error;
 use solana_account_decoder_client_types::UiAccountEncoding;
@@ -60,15 +60,16 @@ async move {
                         tokio::select! {
                             biased;
                             _ = interval.tick() => {
-                                match rpc_client.get_account_with_config(&pubkey, config.clone()).await {
+                                match rpc_client.get_ui_account_with_config(&pubkey, config.clone()).await {
                                     Ok(response) => {
-                                        if let Some(new_account) = response.value {
+                                        if let Some(ui_account) = response.value {
+                                            let data = ui_account.data.decode().unwrap_or_default();
                                             on_update(
                                                 &AccountUpdate {
-                                                    owner: new_account.owner,
-                                                    lamports: new_account.lamports,
+                                                    owner: Pubkey::from_str(&ui_account.owner).unwrap_or_default(),
+                                                    lamports: ui_account.lamports,
                                                     pubkey,
-                                                    data: new_account.data,
+                                                    data,
                                                     slot: response.context.slot,
                                                 }
                                             );

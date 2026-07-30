@@ -259,15 +259,16 @@ impl AccountMap {
             )
             .await?;
 
-        for (pubkey, account) in stats_sync_result {
+        for (pubkey, ui_account) in stats_sync_result {
+            let data = ui_account.data.decode().unwrap_or_default();
             self.on_account_fn()(&AccountUpdate {
                 pubkey,
-                data: &account.data.decode().unwrap_or_default(),
-                lamports: account.lamports,
+                data: &data,
+                lamports: ui_account.lamports,
                 owner: PROGRAM_ID,
-                rent_epoch: u64::MAX,
+                rent_epoch: ui_account.rent_epoch,
                 write_version: 0,
-                executable: false,
+                executable: ui_account.executable,
                 slot,
             });
         }
@@ -297,15 +298,16 @@ impl AccountMap {
             )
             .await?;
 
-        for (pubkey, account) in sync_result {
+        for (pubkey, ui_account) in sync_result {
+            let data = ui_account.data.decode().unwrap_or_default();
             self.on_account_fn()(&AccountUpdate {
                 pubkey,
-                data: &account.data.decode().unwrap_or_default(),
-                lamports: account.lamports,
+                data: &data,
+                lamports: ui_account.lamports,
                 owner: PROGRAM_ID,
-                rent_epoch: u64::MAX,
+                rent_epoch: ui_account.rent_epoch,
                 write_version: 0,
-                executable: false,
+                executable: ui_account.executable,
                 slot,
             });
         }

@@ -9,7 +9,7 @@ use futures_util::{
 use log::{error, info, warn};
 use solana_rpc_client_api::filter::Memcmp;
 use yellowstone_grpc_client::{
-    ClientTlsConfig, GeyserGrpcBuilderError, GeyserGrpcClient, GeyserGrpcClientError, Interceptor,
+    ClientTlsConfig, GeyserGrpcBuilderError, GeyserGrpcClient, GeyserGrpcClientError,
 };
 use yellowstone_grpc_proto::{
     geyser::{
@@ -376,7 +376,7 @@ impl DriftGrpcClient {
     ///
     /// It receives all configured updates and routes them to registered callbacks
     async fn geyser_subscribe(
-        mut client: GeyserGrpcClient<impl Interceptor>,
+        mut client: GeyserGrpcClient,
         request: SubscribeRequest,
         on_account: Hooks,
         on_transaction: TransactionHooks,
@@ -626,7 +626,7 @@ async fn grpc_connect(
     endpoint: &str,
     x_token: &str,
     opts: GrpcConnectionOpts,
-) -> Result<GeyserGrpcClient<impl Interceptor + use<>>, GeyserGrpcBuilderError> {
+) -> Result<GeyserGrpcClient, GeyserGrpcBuilderError> {
     info!(target: "grpc", "gRPC connecting: {endpoint}...");
     let mut tls_config = ClientTlsConfig::new().with_native_roots();
     if let Ok(path) = &std::env::var("GRPC_CA_CERT") {

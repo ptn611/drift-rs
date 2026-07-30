@@ -163,8 +163,8 @@ impl GlobalUserMap {
         if let OptionalContext::Context(accounts) = response {
             for account in accounts.value {
                 let pubkey = account.pubkey;
-                let user_data = account.account.data.decode().expect("User data");
-                let data = User::try_deserialize_unchecked(&mut user_data.as_slice())
+                let user_data = account.account.data.decode().expect("binary data");
+                let data = User::try_deserialize_unchecked(&mut &user_data[8..])
                     .expect("User deserializes");
                 self.usermap.insert(pubkey, data);
             }
