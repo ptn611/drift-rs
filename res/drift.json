@@ -11664,45 +11664,45 @@
             "type": "i64"
           },
           {
-            "name": "makerVolume30d",
+            "name": "makerVolume1w",
             "docs": [
-              "Rolling 30day maker volume for user",
+              "Rolling 1w maker volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "takerVolume30d",
+            "name": "takerVolume1w",
             "docs": [
-              "Rolling 30day taker volume for user",
+              "Rolling 1w taker volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "fillerVolume30d",
+            "name": "fillerVolume1w",
             "docs": [
-              "Rolling 30day filler volume for user",
+              "Rolling 1w filler volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "lastMakerVolume30dTs",
+            "name": "lastMakerVolume1wTs",
             "docs": [
               "last time the maker volume was updated"
             ],
             "type": "i64"
           },
           {
-            "name": "lastTakerVolume30dTs",
+            "name": "lastTakerVolume1wTs",
             "docs": [
               "last time the taker volume was updated"
             ],
             "type": "i64"
           },
           {
-            "name": "lastFillerVolume30dTs",
+            "name": "lastFillerVolume1wTs",
             "docs": [
               "last time the filler volume was updated"
             ],
