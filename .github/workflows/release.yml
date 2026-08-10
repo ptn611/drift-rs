@@ -19,7 +19,19 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 1
-          submodules: true
+
+      - name: Check out drift-ffi-sys (sibling, built from source)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/drift-ffi-sys
+          path: drift-ffi-sys
+
+      - name: Check out protocol-v2 (dep of drift-ffi-sys)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/protocol-v2
+          path: protocol-v2
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
       - name: install 1.76.0 toolchain
@@ -38,10 +50,9 @@ jobs:
           cargo publish || true
       - name: Publish drift-rs
         run: |
-          # add libdrift_ffi_sys
-          FFI_VERSION=$(grep '^version = ' crates/drift-ffi-sys/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
-          curl -L https://github.com/velocity-exchange/drift-ffi-sys/releases/download/v$FFI_VERSION/libdrift_ffi_sys.so > libdrift_ffi_sys.so
-          sudo mv libdrift_ffi_sys.so $CARGO_DRIFT_FFI_PATH
+          # build libdrift_ffi_sys from source (drift-ffi-sys sibling)
+          cargo build --release --manifest-path ../drift-ffi-sys/Cargo.toml
+          sudo cp ../drift-ffi-sys/target/release/libdrift_ffi_sys.so $CARGO_DRIFT_FFI_PATH
           # publish to crates.io
           cargo -V
           cargo publish
@@ -59,11 +70,15 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 1
-          submodules: true
+      - name: Check out drift-ffi-sys (sibling)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/drift-ffi-sys
+          path: drift-ffi-sys
       - name: Notify repository
         run: |
           # Extract libdrift-ffi-sys version
-          FFI_VERSION=$(grep '^version = ' crates/drift-ffi-sys/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          FFI_VERSION=$(grep '^version = ' ../drift-ffi-sys/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
           # Extract release tag (removes 'refs/tags/' prefix)
           TAG=${GITHUB_REF#refs/tags/}
  
@@ -72,5 +87,5 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.REPO_DISPATCH_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/velocity-exchange/${{ matrix.repo }}/dispatches \
+            https://api.github.com/repos/ptn611/${{ matrix.repo }}/dispatches \
             -d "{\"event_type\":\"drift_rs_release\",\"client_payload\":{\"tag\":\"$TAG\",\"ffi_version\":\"$FFI_VERSION\"}}"

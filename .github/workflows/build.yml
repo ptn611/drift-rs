@@ -22,15 +22,24 @@ on:
 
 jobs:
   format-build-test:
-    env:
-      CARGO_DRIFT_FFI_PATH: /usr/lib
     runs-on: ubicloud
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
-      - name: Check out
+      - name: Check out drift-rs
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Check out drift-ffi-sys (sibling, built from source by build.rs)
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          submodules: true
+          repository: ptn611/drift-ffi-sys
+          path: drift-ffi-sys
+
+      - name: Check out protocol-v2 (dep of drift-ffi-sys)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/protocol-v2
+          path: protocol-v2
+
       - name: Cache Rust toolchain
         id: cache-rust-target-restore
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -47,14 +56,6 @@ jobs:
         run: |
           rustup show active-toolchain
           rustup component add clippy rustfmt
-      - name: install latest libdrift_ffi_sys
-        run: |
-          # NB: this will break historic CI jobs (if breaking program changes happen)
-          # better to ensure latest version works
-          SO_URL=$(curl -s https://api.github.com/repos/velocity-exchange/drift-ffi-sys/releases/latest | jq -r '.assets[] | select(.name=="libdrift_ffi_sys.so") | .browser_download_url')
-          echo "downloading libdrift: $SO_URL"
-          curl -L -o libdrift_ffi_sys.so "$SO_URL"
-          sudo cp libdrift_ffi_sys.so $CARGO_DRIFT_FFI_PATH
       - name: Format
         run: cargo fmt --all -- --check
       - name: Build

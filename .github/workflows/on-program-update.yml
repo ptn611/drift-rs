@@ -13,7 +13,7 @@ jobs:
       - name: Check update version
         id: version-check
         run: |
-          VERSION=$(curl -s "https://api.github.com/repos/velocity-exchange/protocol-v2/tags" | grep -m 1 "name" | cut -d '"' -f 4)
+          VERSION=$(curl -s "https://api.github.com/repos/ptn611/protocol-v2/tags" | grep -m 1 "name" | cut -d '"' -f 4)
           echo "idl_version=$VERSION" >> $GITHUB_OUTPUT
 
           # Check if version contains beta, alpha, or rc tags
@@ -31,15 +31,26 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    env:
-      CARGO_DRIFT_FFI_PATH: /usr/lib
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
+      - name: Check out protocol-v2 at tagged version
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/protocol-v2
+          ref: tags/${{ needs.check-version.outputs.idl_version }}
+          path: protocol-v2
+
+      - name: Check out drift-ffi-sys (sibling, built from source by build.rs)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          repository: ptn611/drift-ffi-sys
+          path: drift-ffi-sys
+
       - name: Update IDL
         run: |
-          curl -H 'Accept: application/vnd.github.v3.raw' 'https://api.github.com/repos/velocity-exchange/protocol-v2/contents/sdk/src/idl/drift.json?ref=tags/${{ needs.check-version.outputs.idl_version }}' > res/drift.json
+          cp protocol-v2/sdk/src/idl/drift.json res/drift.json
 
       - name: Setup Rust
         uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # v1
@@ -49,12 +60,6 @@ jobs:
 
       - name: Generate Rust types
         run: |
-          # libdrift install
-          SO_URL=$(curl -s https://api.github.com/repos/velocity-exchange/drift-ffi-sys/releases/latest | jq -r '.assets[] | select(.name=="libdrift_ffi_sys.so") | .browser_download_url')
-          echo "downloading libdrift: $SO_URL"
-          curl -L -o libdrift_ffi_sys.so "$SO_URL"
-          sudo cp libdrift_ffi_sys.so $CARGO_DRIFT_FFI_PATH && rm libdrift_ffi_sys.so
-
           cargo check
 
       - name: Git config

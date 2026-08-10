@@ -1,1 +1,8 @@
- curl -H 'Accept: application/vnd.github.v3.raw' 'https://api.github.com/repos/velocity-exchange/protocol-v2/contents/sdk/src/idl/drift.json' > res/drift.json
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DRIFT_RS_DIR="$(dirname "$SCRIPT_DIR")"
+PROTOCOL_V2_DIR="${PROTOCOL_V2_DIR:-$DRIFT_RS_DIR/../protocol-v2}"
+
+cp "$PROTOCOL_V2_DIR/sdk/src/idl/drift.json" "$DRIFT_RS_DIR/res/drift.json"
