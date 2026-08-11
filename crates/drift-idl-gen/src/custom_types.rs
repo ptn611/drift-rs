@@ -19,7 +19,7 @@
     bytemuck::Pod,
     Debug,
 )]
-#[repr(C)]
+#[repr(C, align(16))]
 pub struct u128(pub [u8; 16]);
 
 impl u128 {
@@ -50,7 +50,7 @@ impl From<std::primitive::u128> for self::u128 {
     bytemuck::Pod,
     Debug,
 )]
-#[repr(C)]
+#[repr(C, align(16))]
 pub struct i128(pub [u8; 16]);
 
 impl i128 {

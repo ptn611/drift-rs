@@ -2605,7 +2605,7 @@ pub mod types {
         bytemuck :: Pod,
         Debug,
     )]
-    #[repr(C)]
+    #[repr(C, align(16))]
     pub struct u128(pub [u8; 16]);
     impl u128 {
         #[doc = " convert self into the std `u128` type"]
@@ -2633,7 +2633,7 @@ pub mod types {
         bytemuck :: Pod,
         Debug,
     )]
-    #[repr(C)]
+    #[repr(C, align(16))]
     pub struct i128(pub [u8; 16]);
     impl i128 {
         #[doc = " convert self into the std `i128` type"]
