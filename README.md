@@ -13,7 +13,7 @@
 
 # drift-rs
 
-Experimental, high performance Rust SDK for building offchain clients for [Drift V2](https://github.com/drift-labs/protocol-v2) protocol.
+Experimental, high performance Rust SDK for building offchain clients for [Drift V2](https://github.com/ptn611/protocol-v2) protocol.
 
 See the official [docs](https://docs.rs/drift-rs/latest/drift_rs/)
 

@@ -116,7 +116,7 @@ fn get_platform_details(
 
     println!("cargo:warning=Unsupported host platform: {host_target}");
     println!(
-        "cargo:warning=Please open an issue at: https://github.com/drift-labs/drift-rs/issues"
+        "cargo:warning=Please open an issue at: https://github.com/ptn611/drift-rs/issues"
     );
     Err("Unsupported platform".into())
 }
