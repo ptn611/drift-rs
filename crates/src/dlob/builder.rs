@@ -110,6 +110,11 @@ impl<'a> DLOBBuilder<'a> {
         self.notifier.user_update(pubkey, None, user, slot);
     }
 
+    /// Notify the DLOB of the current slot and oracle price for a market
+    pub fn update_slot_and_oracle(&self, market: MarketId, slot: u64, oracle_price: u64) {
+        self.notifier.slot_and_oracle_update(market, slot, oracle_price);
+    }
+
     /// Returns a handler suitable for use in grpc_subscribe's on_slot
     ///
     /// This will notify the DLOB of slot/price updates for the given markets.

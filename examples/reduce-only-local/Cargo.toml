@@ -1,0 +1,12 @@
+[package]
+name = "reduce-only-local"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+drift-rs = { path = "../../" }
+env_logger = "0.11"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+solana-transaction-status = "3"
+tokio = { version = "1", features = ["full"] }
