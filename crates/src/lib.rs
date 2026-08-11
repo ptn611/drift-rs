@@ -1136,13 +1136,11 @@ impl DriftClientBackend {
         let lookup_tables = lut_pubkeys
             .iter()
             .zip(lut_accounts.iter())
-            .map(|(pubkey, account_data)| {
-                let data = account_data
-                    .as_ref()
-                    .ok_or_else(|| SdkError::Generic(format!("LUT account missing: {}", pubkey)))?;
-                utils::deserialize_alt(*pubkey, data).map_err(|_| SdkError::Deserializing)
+            .filter_map(|(pubkey, account_data)| {
+                let data = account_data.as_ref()?;
+                utils::deserialize_alt(*pubkey, data).ok()
             })
-            .collect::<SdkResult<Vec<_>>>()?;
+            .collect::<Vec<_>>();
 
         let mut all_oracles = Vec::<(MarketId, Pubkey, OracleSource)>::with_capacity(
             perp_market_map.len() + spot_market_map.len(),
@@ -4164,16 +4162,13 @@ pub fn build_accounts<'a>(
                 let SpotMarket { pubkey, oracle, .. } = program_data
                     .spot_market_config_by_index(market_index)
                     .expect("exists");
-                accounts.extend(
-                    [
-                        RemainingAccount::Spot {
-                            pubkey: *pubkey,
-                            writable,
-                        },
-                        RemainingAccount::Oracle { pubkey: *oracle },
-                    ]
-                    .iter(),
-                )
+                accounts.insert(RemainingAccount::Spot {
+                    pubkey: *pubkey,
+                    writable,
+                });
+                if *oracle != Pubkey::default() {
+                    accounts.insert(RemainingAccount::Oracle { pubkey: *oracle });
+                }
             }
             MarketType::Perp => {
                 let PerpMarket { pubkey, amm, .. } = program_data
