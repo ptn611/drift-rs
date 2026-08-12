@@ -11664,45 +11664,45 @@
             "type": "i64"
           },
           {
-            "name": "makerVolume1w",
+            "name": "makerVolume30d",
             "docs": [
-              "Rolling 1w maker volume for user",
+              "Rolling 30d maker volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "takerVolume1w",
+            "name": "takerVolume30d",
             "docs": [
-              "Rolling 1w taker volume for user",
+              "Rolling 30d taker volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "fillerVolume1w",
+            "name": "fillerVolume30d",
             "docs": [
-              "Rolling 1w filler volume for user",
+              "Rolling 30d filler volume for user",
               "precision: QUOTE_PRECISION"
             ],
             "type": "u64"
           },
           {
-            "name": "lastMakerVolume1wTs",
+            "name": "lastMakerVolume30dTs",
             "docs": [
               "last time the maker volume was updated"
             ],
             "type": "i64"
           },
           {
-            "name": "lastTakerVolume1wTs",
+            "name": "lastTakerVolume30dTs",
             "docs": [
               "last time the taker volume was updated"
             ],
             "type": "i64"
           },
           {
-            "name": "lastFillerVolume1wTs",
+            "name": "lastFillerVolume30dTs",
             "docs": [
               "last time the filler volume was updated"
             ],
@@ -11811,13 +11811,19 @@
             "type": "u32"
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                12
-              ]
-            }
+            "name": "lastReferrerTakerVolume30dTs",
+            "docs": [
+              "last unix ts the referrer taker volume was updated (u32 to save space)"
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "referrerTakerVolume30d",
+            "docs": [
+              "Rolling 30d taker volume of all users this user has referred",
+              "precision: QUOTE_PRECISION"
+            ],
+            "type": "u64"
           }
         ]
       }

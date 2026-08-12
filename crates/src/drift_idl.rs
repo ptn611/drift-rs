@@ -6638,12 +6638,12 @@ pub mod accounts {
         pub referrer: Pubkey,
         pub fees: UserFees,
         pub next_epoch_ts: i64,
-        pub maker_volume1w: u64,
-        pub taker_volume1w: u64,
-        pub filler_volume1w: u64,
-        pub last_maker_volume1w_ts: i64,
-        pub last_taker_volume1w_ts: i64,
-        pub last_filler_volume1w_ts: i64,
+        pub maker_volume30d: u64,
+        pub taker_volume30d: u64,
+        pub filler_volume30d: u64,
+        pub last_maker_volume30d_ts: i64,
+        pub last_taker_volume30d_ts: i64,
+        pub last_filler_volume30d_ts: i64,
         pub if_staked_quote_asset_amount: u64,
         pub number_of_sub_accounts: u16,
         pub number_of_sub_accounts_created: u16,
@@ -6659,8 +6659,8 @@ pub mod accounts {
         pub fuel_maker: u32,
         pub if_staked_gov_token_amount: u64,
         pub last_fuel_if_bonus_update_ts: u32,
-        #[serde(skip)]
-        pub padding: Padding<12>,
+        pub last_referrer_taker_volume30d_ts: u32,
+        pub referrer_taker_volume30d: u64,
     }
     #[automatically_derived]
     impl anchor_lang::Discriminator for UserStats {
