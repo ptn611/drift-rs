@@ -683,7 +683,16 @@ impl DLOB {
         self.with_orderbook_mut(
             &MarketId::new(order.market_index, order.market_type),
             |mut orderbook| {
-               let kind = match order.order_type {
+                // Queue orders (offset_type = 1) are priced dynamically at fill
+                // time from the queue anchor, so they never enter the DLOB book /
+                // best bid-ask (High #28). Record the event only; no book insert,
+                // no metadata, removal is a no-op.
+                if order.offset_type == 1 {
+                    log::trace!(target: TARGET, "skip queue order: {order_id}");
+                    return;
+                }
+
+                let kind = match order.order_type {
                     OrderType::Market => {
                         orderbook.market_orders.insert(order_id, order);
                         OrderKind::Market

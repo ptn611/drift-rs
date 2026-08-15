@@ -23,14 +23,12 @@ use crate::{
     types::{Context, MarketId, OrderParams, SdkError, SdkResult},
 };
 
-/// Swift message discriminator (Anchor)
-///
-/// sha256("global:SignedMsgOrderParamsMessage")[..8]
-pub const SWIFT_MSG_PREFIX: [u8; 8] = [0xc8, 0xd5, 0xa6, 0x5e, 0x22, 0x34, 0xf5, 0x5d];
-/// Swift delegate message discriminator (Anchor)
-///
-/// sha256("global:/// sha256("global:SignedMsgOrderParamsDelegatedMessage")[..8]
-pub const SWIFT_DELEGATE_MSG_PREFIX: [u8; 8] = [0x42, 0x65, 0x66, 0x38, 0xc7, 0x25, 0x9e, 0x23];
+/// Swift message discriminator (versioned prefix, kept lockstep with the contract
+/// `SIGNED_MSG_ORDER_PARAMS_DISCRIMINATOR` and the SDK — atomic deploy, no old-client compat)
+pub const SWIFT_MSG_PREFIX: [u8; 8] = *b"smsgv002";
+/// Swift delegate message discriminator (versioned prefix, kept lockstep with the contract
+/// `SIGNED_MSG_ORDER_PARAMS_DELEGATE_DISCRIMINATOR` and the SDK)
+pub const SWIFT_DELEGATE_MSG_PREFIX: [u8; 8] = *b"dsmsv002";
 
 pub const SWIFT_DEVNET_WS_URL: &str = "wss://master.swift.drift.trade";
 pub const SWIFT_MAINNET_WS_URL: &str = "wss://swift.drift.trade";
@@ -679,7 +677,7 @@ mod tests {
             "order":{
                 "market_index":1,
                 "market_type":"perp",
-                "order_message":"b9c165ffdf70594d0001010080841e00000000000000000000000000010000000000000000013201a4e99abc16000000011ab2f982160000000300900f84150000000072753959424c52740000",
+                "order_message":"736d7367763030320001010080841e0000000000000000000000000001000000000000000000013201a4e99abc16000000011ab2f982160000000300900f84150000000072753959424c5274000000000000",
                 "order_signature":"FIgxWlW+C0abvtE8esSko7At1YGM8h66T0u5lJpwXirW63CuvEllVWZ68NNVFsaqcj4jqgQInXUnLPjIf/PQDA==",
                 "signing_authority":"4rmhwytmKH1XsgGAUyUUH7U64HS5FtT6gM8HGKAfwcFE",
                 "taker_authority":"DxoRJ4f5XRMvXU9SGuM4ZziBFUxbhB3ubur5sVZEvue2",
@@ -709,19 +707,19 @@ mod tests {
 
     #[test]
     fn test_swift_order_encode_for_signing() {
-        let msg = "{\"channel\":\"swift_orders_perp_2\",\"order\":{\"market_index\":2,\"market_type\":\"perp\",\"order_message\":\"c8d5a65e2234f55d0001010080841e0000000000000000000000000002000000000000000001320124c6aa950000000001786b2f94000000000000bb64a9150000000074735730364f6d380000\",\"order_signature\":\"SaOaLJ1i0MqZ2cXdp00jGe2EJFa32eOfiQynFU7mclhT86yhIa4/tWXq7r6l7QPN0Jl6frfsZl0nNOvKZxZpAA==\",\"signing_authority\":\"4rmhwytmKH1XsgGAUyUUH7U64HS5FtT6gM8HGKAfwcFE\",\"taker_authority\":\"4rmhwytmKH1XsgGAUyUUH7U64HS5FtT6gM8HGKAfwcFE\",\"ts\":1740456840770,\"uuid\":\"tsW06Om8\"}}";
+        let msg = "{\"channel\":\"swift_orders_perp_2\",\"order\":{\"market_index\":2,\"market_type\":\"perp\",\"order_message\":\"736d7367763030320001010080841e000000000000000000000000000200000000000000000001320124c6aa950000000001786b2f94000000000000bb64a9150000000074735730364f6d38000000000000\",\"order_signature\":\"SaOaLJ1i0MqZ2cXdp00jGe2EJFa32eOfiQynFU7mclhT86yhIa4/tWXq7r6l7QPN0Jl6frfsZl0nNOvKZxZpAA==\",\"signing_authority\":\"4rmhwytmKH1XsgGAUyUUH7U64HS5FtT6gM8HGKAfwcFE\",\"taker_authority\":\"4rmhwytmKH1XsgGAUyUUH7U64HS5FtT6gM8HGKAfwcFE\",\"ts\":1740456840770,\"uuid\":\"tsW06Om8\"}}";
         let order_notification: OrderNotification = serde_json::from_str(&msg).unwrap();
         let signed_message = order_notification.order;
         assert_eq!(
             signed_message.encode_for_signing().as_slice(),
-            b"c8d5a65e2234f55d0001010080841e0000000000000000000000000002000000000000000001320124c6aa950000000001786b2f94000000000000bb64a9150000000074735730364f6d380000"
+            b"736d7367763030320001010080841e000000000000000000000000000200000000000000000001320124c6aa950000000001786b2f94000000000000bb64a9150000000074735730364f6d38000000000000"
         );
     }
 
     #[test]
     fn deser_ix_payload() {
         let data = hex_literal::hex!(
-            "204f658b1906620f040100000a09f3447ce77b9aa6374b05c5efb667042ca0cb15ca74af8a8b97b5ad09cd68aef5bda66b38c021c42ff59afad102b7ffa31bc9c52ee85a8752b3142d62b405833d29adc5096b41d5b9d3b2d6fe46deecb286644510a70f85b95853ec628209a20063386435613635653232333466353564303430313030303038306561383232623030303030303030303030303030303030303030303030303030303030303030303030303030303030313437373930303030303131343031623065386663666666666666666666663031343737393030303030303030303030303039303062323436383231343030303030303030363235393733333936393638343133353030303000"
+            "204f658b1906620f060100000a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0ba400373336643733363737363330333033323030303130313030383038343165303030303030303030303030303030303030303030303030303030313030303030303030303030303030303030303031333230316134653939616263313630303030303030313161623266393832313630303030303030333030393030663834313530303030303030303732373533393539343234633532373430303030303030303030303000"
         );
         let ix = drift_idl::instructions::PlaceSignedMsgTakerOrder::deserialize(&mut &data[8..])
             .unwrap();
@@ -737,7 +735,7 @@ mod tests {
 
     #[test]
     fn deserialize_incoming_signed_message_delegated() {
-        let order_message_raw = "42656638c7259e230001010080841e00000000000000000000000000020000000000000000013201bb60507d000000000117c0127c00000000395311d51c1b87fd56c3b5872d1041111e51f399b12d291d981a0ea383407295272108160000000073386c754a4c5a650000";
+        let order_message_raw = "64736d73763030320001010080841e0000000000000000000000000002000000000000000000013201bb60507d000000000117c0127c00000000395311d51c1b87fd56c3b5872d1041111e51f399b12d291d981a0ea383407295272108160000000073386c754a4c5a65000000000000";
         let payload = serde_json::json!({
             "channel": "swift_orders_perp_2",
             "order": {
