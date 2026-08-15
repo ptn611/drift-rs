@@ -702,7 +702,9 @@ impl DLOB {
                             - limit orders with both POST_ONLY=FALSE can cross, *older order becomes maker
                             - limit order with POST_ONLY=TRUE can become maker for POST_ONLY=FALSE
                         */
-                        let is_floating = order.oracle_price_offset != 0;
+                        // offset_type 0 = Oracle: dynamic offset from oracle price. Queue orders
+                        // (offset_type 1) are priced from queue anchor, not the oracle, so NOT floating.
+                        let is_floating = order.offset != 0 && order.offset_type == 0;
                         let is_post_only = order.post_only;
                         let has_auction_price = (order.auction_end_price != 0 && order.auction_start_price != 0) && !is_auction_complete(&order, slot);
                         let order_kind = if !is_post_only {

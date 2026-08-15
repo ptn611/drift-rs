@@ -80,7 +80,8 @@ pub async fn ws_maker(context: Context, wallet: Wallet) {
                         // floating limit order, priced dynamically as offset from oracle price
                         OrderParams {
                             order_type: OrderType::Limit,
-                            oracle_price_offset: Some((1 * PRICE_PRECISION_U64) as i32), // short 1$ above oracle
+                            offset: Some((1 * PRICE_PRECISION_U64) as i32), // short 1$ above oracle
+                            offset_type: None,
                             base_asset_amount: standardize_amount(quote_size, market_info.quantity_tick()).max(market_info.min_order_size()),
                             direction: PositionDirection::Short,
                             market_type: MarketType::Perp,

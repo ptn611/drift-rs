@@ -211,7 +211,7 @@ impl OracleOrder {
             id: self.id,
             slot: self.slot,
             size: self.size,
-            offset_price: self.oracle_price_offset,
+            offset_price: self.offset,
             max_ts: self.max_ts,
             post_only: false,
             reduce_only: self.reduce_only,
@@ -262,7 +262,7 @@ pub(crate) struct OracleOrder {
     pub size: u64,
     pub start_price_offset: i64,
     pub end_price_offset: i64,
-    pub oracle_price_offset: i32,
+    pub offset: i32,
     pub max_ts: u64,
     pub slot: u64,
     pub duration: u8,
@@ -470,8 +470,8 @@ impl DynamicPrice for OracleOrder {
         let slots_elapsed = slot.saturating_sub(self.slot) as i64;
         // limit price after auction end
         if slots_elapsed > self.duration as i64 {
-            return if self.oracle_price_offset > 0 {
-                Some((oracle_price as i64 + self.oracle_price_offset as i64) as u64)
+            return if self.offset > 0 {
+                Some((oracle_price as i64 + self.offset as i64) as u64)
             } else {
                 None
             };
@@ -515,7 +515,7 @@ impl From<(u64, Order)> for OracleOrder {
             size: order.base_asset_amount - order.base_asset_amount_filled,
             start_price_offset: order.auction_start_price,
             end_price_offset: order.auction_end_price,
-            oracle_price_offset: order.oracle_price_offset,
+            offset: order.offset,
             duration: order.auction_duration,
             slot: order.slot,
             is_limit: order.order_type == OrderType::Limit,
@@ -559,7 +559,7 @@ impl From<(u64, Order)> for FloatingLimitOrder {
         Self {
             id,
             size: order.base_asset_amount - order.base_asset_amount_filled,
-            offset_price: order.oracle_price_offset,
+            offset_price: order.offset,
             slot: order.slot,
             max_ts: order.max_ts as u64,
             post_only: order.post_only,

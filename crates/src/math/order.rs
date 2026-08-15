@@ -14,8 +14,8 @@ pub fn get_limit_price(
         get_auction_price(order, slot, oracle_price_data.price)
             .try_into()
             .unwrap()
-    } else if order.oracle_price_offset != 0 {
-        (oracle_price_data.price as i128 + order.oracle_price_offset as i128)
+    } else if order.offset != 0 && order.offset_type == 0 {
+        (oracle_price_data.price as i128 + order.offset as i128)
             .try_into()
             .unwrap()
     } else if order.price == 0 {

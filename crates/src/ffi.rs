@@ -85,6 +85,7 @@ unsafe extern "C" {
         tick_size: u64,
         is_prediction_market: bool,
         pmm_params: Option<ProtectedMakerParams>,
+        anchor: Option<u64>,
     ) -> FfiResult<Option<u64>>;
 
     #[allow(improper_ctypes)]
@@ -741,6 +742,7 @@ impl types::Order {
         tick_size: u64,
         is_prediction_market: bool,
         pmm_params: Option<ProtectedMakerParams>,
+        anchor: Option<u64>,
     ) -> SdkResult<Option<u64>> {
         to_sdk_result(unsafe {
             order_get_limit_price(
@@ -751,6 +753,7 @@ impl types::Order {
                 tick_size,
                 is_prediction_market,
                 pmm_params,
+                anchor,
             )
         })
     }
@@ -1871,7 +1874,8 @@ mod tests {
             max_ts: None,
             trigger_price: None,
             trigger_condition: OrderTriggerCondition::Below,
-            oracle_price_offset: None,
+            offset: None,
+            offset_type: None,
             auction_duration: None,
             auction_start_price: None,
             auction_end_price: None,
@@ -1975,7 +1979,8 @@ mod tests {
             max_ts: None,
             trigger_price: None,
             trigger_condition: OrderTriggerCondition::Below,
-            oracle_price_offset: None,
+            offset: None,
+            offset_type: None,
             auction_duration: None,
             auction_start_price: None,
             auction_end_price: None,
@@ -2485,7 +2490,8 @@ mod tests {
                 auction_duration: 10,
                 auction_start_price: 90 * PRICE_PRECISION_I64,
                 auction_end_price: 100 * PRICE_PRECISION_I64,
-                oracle_price_offset: 555,
+                offset: 555,
+                offset_type: 0,
                 order_type: OrderType::Oracle,
                 direction: PositionDirection::Long,
                 ..Default::default()
@@ -2533,7 +2539,8 @@ mod tests {
             // Case 3: Order with oracle price offset
             (
                 Order {
-                    oracle_price_offset: 5 * PRICE_PRECISION_I64 as i32,
+                    offset: 5 * PRICE_PRECISION_I64 as i32,
+                    offset_type: 0,
                     order_type: OrderType::Limit,
                     direction: PositionDirection::Long,
                     ..Default::default()
@@ -2554,7 +2561,15 @@ mod tests {
 
         for (order, case_name) in cases {
             let result = order
-                .get_limit_price(oracle_price, fallback_price, slot, tick_size, false, None)
+                .get_limit_price(
+                    oracle_price,
+                    fallback_price,
+                    slot,
+                    tick_size,
+                    false,
+                    None,
+                    None,
+                )
                 .unwrap();
             assert!(result.is_some(), "{} should return a price", case_name);
             let price = result.unwrap();

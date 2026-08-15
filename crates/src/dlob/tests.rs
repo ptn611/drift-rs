@@ -97,28 +97,28 @@ fn dlob_floating_limit_order_sorting() {
 
     // Insert bids in random order
     let mut order = create_test_order(1, OrderType::Limit, Direction::Long, 100, 1, slot);
-    order.oracle_price_offset = 10;
+    order.offset = 10;
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(2, OrderType::Limit, Direction::Long, 200, 1, slot);
-    order.oracle_price_offset = 30;
+    order.offset = 30;
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(3, OrderType::Limit, Direction::Long, 150, 1, slot);
-    order.oracle_price_offset = 20;
+    order.offset = 20;
     dlob.insert_order(&user, slot, order);
 
     // Insert asks in random order
     let mut order = create_test_order(4, OrderType::Limit, Direction::Short, 300, 1, slot);
-    order.oracle_price_offset = -30;
+    order.offset = -30;
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(5, OrderType::Limit, Direction::Short, 250, 1, slot);
-    order.oracle_price_offset = -20;
+    order.offset = -20;
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(6, OrderType::Limit, Direction::Short, 350, 1, slot);
-    order.oracle_price_offset = -10;
+    order.offset = -10;
     dlob.insert_order(&user, slot, order);
 
     if let Some(mut book) = dlob.markets.get_mut(&MarketId::new(0, MarketType::Perp)) {
@@ -230,11 +230,11 @@ fn dlob_l2_snapshot() {
 
     // Insert floating limit orders (dynamic price)
     let mut order = create_test_order(5, OrderType::Limit, Direction::Long, 0, 6, slot);
-    order.oracle_price_offset = 100; // Will be 1100 with oracle_price
+    order.offset = 100; // Will be 1100 with oracle_price
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(6, OrderType::Limit, Direction::Short, 0, 7, slot);
-    order.oracle_price_offset = -100; // Will be 900 with oracle_price
+    order.offset = -100; // Will be 900 with oracle_price
     dlob.insert_order(&user, slot, order);
 
     // Update slot and oracle price to calculate dynamic prices
@@ -628,7 +628,7 @@ fn dlob_find_crosses_for_taker_order_floating_limit() {
 
     // Insert floating limit order with -50 offset
     let mut order = create_test_order(1, OrderType::Limit, Direction::Short, 0, 5, slot);
-    order.oracle_price_offset = -50; // Will be 950 with oracle_price
+    order.offset = -50; // Will be 950 with oracle_price
     order.post_only = true;
     dlob.insert_order(&user, slot, order);
 
@@ -651,7 +651,7 @@ fn dlob_find_crosses_for_taker_order_floating_limit() {
     // Should fill the floating limit order
     assert_eq!(result.orders.len(), 1);
     assert_eq!(result.orders[0].0.order_id, 1);
-    assert_eq!(result.orders[0].0.price, 950); // oracle_price + oracle_price_offset
+    assert_eq!(result.orders[0].0.price, 950); // oracle_price + offset
     assert_eq!(result.orders[0].1, 5);
     assert!(!result.is_partial);
 }
@@ -771,7 +771,7 @@ fn dlob_auction_expiry_oracle_orders() {
     // Need auction_start_price/auction_end_price != 0 so orders go to oracle_orders (not floating_limit_orders)
     let mut order = create_test_order(1, OrderType::Limit, Direction::Long, 100, 2, slot);
     order.auction_duration = 5; // Will expire at slot 106
-    order.oracle_price_offset = 100;
+    order.offset = 100;
     order.auction_start_price = 100;
     order.auction_end_price = 100;
     order.max_ts = 0; // Don't expire based on timestamp
@@ -779,7 +779,7 @@ fn dlob_auction_expiry_oracle_orders() {
 
     let mut order = create_test_order(2, OrderType::Limit, Direction::Short, 100, 3, slot);
     order.auction_duration = 10; // Will expire at slot 111
-    order.oracle_price_offset = -100;
+    order.offset = -100;
     order.auction_start_price = 100;
     order.auction_end_price = 100;
     order.max_ts = 0; // Don't expire based on timestamp
@@ -935,7 +935,7 @@ fn dlob_auction_expiry_mixed_orders() {
 
     let mut order = create_test_order(2, OrderType::Limit, Direction::Short, 0, 3, slot);
     order.auction_duration = 5;
-    order.oracle_price_offset = -100;
+    order.offset = -100;
     dlob.insert_order(&user, slot, order);
 
     let mut order = create_test_order(3, OrderType::Market, Direction::Long, 1100, 2, slot);
@@ -1611,7 +1611,7 @@ fn dlob_metadata_consistency_limit_auction_expiry_and_removal() {
     order.auction_start_price = 100_000;
     order.auction_end_price = 200_000;
     order.auction_duration = 5; // Will expire at slot 106
-    // No oracle_price_offset - this makes it a regular limit order
+    // No offset - this makes it a regular limit order
     order.post_only = false; // This makes it a Market order (limit order with auction)
     order.max_ts = 0; // Don't expire based on timestamp
 
@@ -1704,7 +1704,7 @@ fn dlob_metadata_consistency_floating_limit_auction_expiry_and_removal() {
     order.auction_start_price = 100_000;
     order.auction_end_price = 200_000;
     order.auction_duration = 5; // Will expire at slot 106
-    order.oracle_price_offset = 1000; // This makes it a floating limit order
+    order.offset = 1000; // This makes it a floating limit order
     order.post_only = false; // This makes it an Oracle order (floating limit order with auction)
     order.max_ts = 0; // Don't expire based on timestamp
 
@@ -2001,12 +2001,12 @@ fn dlob_get_maker_bids_l3() {
 
     // Insert floating limit orders
     let mut order3 = create_test_order(3, OrderType::Limit, Direction::Long, 0, 4, slot);
-    order3.oracle_price_offset = 150; // Will be 1150 with oracle_price
+    order3.offset = 150; // Will be 1150 with oracle_price
     order3.post_only = true;
     dlob.insert_order(&user, slot, order3);
 
     let mut order4 = create_test_order(4, OrderType::Limit, Direction::Long, 0, 2, slot);
-    order4.oracle_price_offset = 200; // Will be 1200 with oracle_price
+    order4.offset = 200; // Will be 1200 with oracle_price
     order4.post_only = true;
     dlob.insert_order(&user, slot, order4);
 
@@ -2079,12 +2079,12 @@ fn dlob_get_maker_asks_l3() {
 
     // Insert floating limit orders
     let mut order3 = create_test_order(3, OrderType::Limit, Direction::Short, 0, 4, slot);
-    order3.oracle_price_offset = -150; // Will be 850 with oracle_price
+    order3.offset = -150; // Will be 850 with oracle_price
     order3.post_only = true;
     dlob.insert_order(&user, slot, order3);
 
     let mut order4 = create_test_order(4, OrderType::Limit, Direction::Short, 0, 2, slot);
-    order4.oracle_price_offset = -200; // Will be 800 with oracle_price
+    order4.offset = -200; // Will be 800 with oracle_price
     order4.post_only = true;
     dlob.insert_order(&user, slot, order4);
 
@@ -2283,12 +2283,12 @@ fn dlob_l3_functions_mixed_order_types() {
 
     // Floating limit orders
     let mut floating_bid = create_test_order(3, OrderType::Limit, Direction::Long, 0, 3, slot);
-    floating_bid.oracle_price_offset = 100; // Will be 1100 with oracle_price
+    floating_bid.offset = 100; // Will be 1100 with oracle_price
     floating_bid.post_only = true;
     dlob.insert_order(&user, slot, floating_bid);
 
     let mut floating_ask = create_test_order(4, OrderType::Limit, Direction::Short, 0, 3, slot);
-    floating_ask.oracle_price_offset = -100; // Will be 900 with oracle_price
+    floating_ask.offset = -100; // Will be 900 with oracle_price
     floating_ask.post_only = true;
     dlob.insert_order(&user, slot, floating_ask);
 
@@ -2411,12 +2411,12 @@ fn l3book_bids_query_with_fixed_and_floating_orders() {
 
     // Insert floating limit bids (prices adjust with oracle)
     let mut order3 = create_test_order(3, OrderType::Limit, Direction::Long, 0, 8, slot);
-    order3.oracle_price_offset = 120; // Will be 1120 at oracle_price 1000
+    order3.offset = 120; // Will be 1120 at oracle_price 1000
     order3.post_only = true;
     dlob.insert_order(&user, slot, order3);
 
     let mut order4 = create_test_order(4, OrderType::Limit, Direction::Long, 0, 15, slot);
-    order4.oracle_price_offset = 80; // Will be 1080 at oracle_price 1000
+    order4.offset = 80; // Will be 1080 at oracle_price 1000
     order4.post_only = true;
     dlob.insert_order(&user, slot, order4);
 
@@ -2472,12 +2472,12 @@ fn l3book_asks_query_with_fixed_and_floating_orders() {
 
     // Insert floating limit asks
     let mut order3 = create_test_order(3, OrderType::Limit, Direction::Short, 0, 8, slot);
-    order3.oracle_price_offset = -120; // Will be 880 at oracle_price 1000
+    order3.offset = -120; // Will be 880 at oracle_price 1000
     order3.post_only = true;
     dlob.insert_order(&user, slot, order3);
 
     let mut order4 = create_test_order(4, OrderType::Limit, Direction::Short, 0, 15, slot);
-    order4.oracle_price_offset = -80; // Will be 920 at oracle_price 1000
+    order4.offset = -80; // Will be 920 at oracle_price 1000
     order4.post_only = true;
     dlob.insert_order(&user, slot, order4);
 
@@ -2529,7 +2529,7 @@ fn l3book_bids_with_oracle_price_change() {
 
     // Insert floating bid with +100 offset (will be 1100 at initial oracle)
     let mut order2 = create_test_order(2, OrderType::Limit, Direction::Long, 0, 10, slot);
-    order2.oracle_price_offset = 100;
+    order2.offset = 100;
     order2.post_only = true;
     dlob.insert_order(&user, slot, order2);
 
@@ -2584,7 +2584,7 @@ fn l3book_asks_with_oracle_price_change() {
 
     // Insert floating ask with -100 offset (will be 900 at initial oracle)
     let mut order2 = create_test_order(2, OrderType::Limit, Direction::Short, 0, 10, slot);
-    order2.oracle_price_offset = -100;
+    order2.offset = -100;
     order2.post_only = true;
     dlob.insert_order(&user, slot, order2);
 
@@ -2738,7 +2738,7 @@ fn l3book_bids_includes_all_order_types() {
 
     // Insert floating limit order
     let mut floating_order = create_test_order(2, OrderType::Limit, Direction::Long, 0, 8, slot);
-    floating_order.oracle_price_offset = 120; // Will be 1120
+    floating_order.offset = 120; // Will be 1120
     floating_order.post_only = true;
     dlob.insert_order(&user, slot, floating_order);
 

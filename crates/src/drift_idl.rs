@@ -3226,7 +3226,8 @@ pub mod types {
         pub max_ts: Option<i64>,
         pub trigger_price: Option<u64>,
         pub trigger_condition: OrderTriggerCondition,
-        pub oracle_price_offset: Option<i32>,
+        pub offset: Option<i32>,
+        pub offset_type: Option<u8>,
         pub auction_duration: Option<u8>,
         pub auction_start_price: Option<i64>,
         pub auction_end_price: Option<i64>,
@@ -3321,7 +3322,8 @@ pub mod types {
         pub max_ts: Option<i64>,
         pub trigger_price: Option<u64>,
         pub trigger_condition: Option<OrderTriggerCondition>,
-        pub oracle_price_offset: Option<i32>,
+        pub offset: Option<i32>,
+        pub offset_type: Option<u8>,
         pub auction_duration: Option<u8>,
         pub auction_start_price: Option<i64>,
         pub auction_end_price: Option<i64>,
@@ -3810,7 +3812,7 @@ pub mod types {
         pub auction_start_price: i64,
         pub auction_end_price: i64,
         pub max_ts: i64,
-        pub oracle_price_offset: i32,
+        pub offset: i32,
         pub order_id: u32,
         pub market_index: u16,
         pub status: OrderStatus,
@@ -3826,8 +3828,7 @@ pub mod types {
         pub auction_duration: u8,
         pub posted_slot_tail: u8,
         pub bit_flags: u8,
-        #[serde(skip)]
-        pub padding: Padding<1>,
+        pub offset_type: u8,
     }
     #[derive(
         AnchorSerialize,
