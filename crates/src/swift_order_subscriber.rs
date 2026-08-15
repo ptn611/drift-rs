@@ -617,13 +617,17 @@ where
                 inner: x,
             })
             .map_err(serde::de::Error::custom)
-    } else {
+    } else if borsh_buf[..8] == SWIFT_MSG_PREFIX {
         AnchorDeserialize::deserialize(&mut &borsh_buf[8..])
             .map(|x| SignedOrderType::Authority {
                 raw: Some(payload.to_string()),
                 inner: x,
             })
             .map_err(serde::de::Error::custom)
+    } else {
+        Err(serde::de::Error::custom(
+            "unknown signed message discriminator (expected smsgv002 or dsmsv002)",
+        ))
     }
 }
 

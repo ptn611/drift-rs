@@ -685,9 +685,11 @@ impl DLOB {
             |mut orderbook| {
                 // Queue orders (offset_type = 1) are priced dynamically at fill
                 // time from the queue anchor, so they never enter the DLOB book /
-                // best bid-ask (High #28). Record the event only; no book insert,
+                // best bid-ask (High #28). Any invalid/corrupt offset_type (> 1)
+                // gets the same fail-closed treatment — never classified as an
+                // Oracle-floating order. Record the event only; no book insert,
                 // no metadata, removal is a no-op.
-                if order.offset_type == 1 {
+                if order.offset_type != 0 {
                     log::trace!(target: TARGET, "skip queue order: {order_id}");
                     return;
                 }
